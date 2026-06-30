@@ -6,3 +6,15 @@ Icon?
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Node / Astro
+node_modules/
+dist/
+.astro/
+.vercel/
+.netlify/
+
+# Env
+.env
+.env.*
+!.env.example

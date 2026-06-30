@@ -1,0 +1,37 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Walter's — Landscaping & Construction",
+  description = "Full-service landscaping and construction in Chapel Hill, NC. Lawn care, mulch, patios, walkways, and construction — done right.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Preload the self-hosted display face (above-the-fold H1) -->
+    <link
+      rel="preload"
+      href="/fonts/TAYBirdieRegular.woff"
+      as="font"
+      type="font/woff"
+      crossorigin
+    />
+    <!-- Adobe Fonts kit: Freight ("freight-text-pro") + Avenir ("avenir-lt-pro") -->
+    <link rel="stylesheet" href="https://use.typekit.net/ioy6xpq.css" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

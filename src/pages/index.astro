@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// TEMPORARY foundation/type specimen — verifies design tokens + the three fonts
+// load and render. Replaced by the real Home page in the next step.
+---
+
+<BaseLayout title="Walter's — Foundation preview">
+  <main class="mx-auto max-w-4xl px-6 py-16">
+    <p class="font-sans text-small text-green-600">
+      Temporary foundation preview — verifies design tokens + fonts. Replaced by the Home page next.
+    </p>
+
+    <section class="mt-12 border-t border-line pt-10">
+      <h2 class="font-sans text-small text-olive">Display / H1 · Birdie (self-hosted .woff)</h2>
+      <p class="mt-2 font-display text-h1 text-green-900">Landscaping and construction, done right.</p>
+    </section>
+
+    <section class="mt-10 border-t border-line pt-10">
+      <h2 class="font-sans text-small text-olive">Heading / H2–H3 · Freight (freight-text-pro)</h2>
+      <p class="mt-2 font-heading text-h2 font-bold text-green-900">Patios, Walkways &amp; Construction</p>
+      <p class="mt-3 font-heading text-h3 font-bold text-green-800">Landscaping &amp; Mulch</p>
+    </section>
+
+    <section class="mt-10 border-t border-line pt-10">
+      <h2 class="font-sans text-small text-olive">Body / UI · Avenir (avenir-lt-pro)</h2>
+      <p class="mt-2 max-w-2xl font-sans text-body text-green-900">
+        We're a full-service landscaping and construction company that sweats the details —
+        sharp edges, clean lines, and work we're proud to put our name on.
+        <strong class="font-bold">Bold 700.</strong> <em class="italic">Italic.</em>
+      </p>
+    </section>
+
+    <section class="mt-10 border-t border-line pt-10">
+      <h2 class="font-sans text-small text-olive">Core palette</h2>
+      <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <div class="rounded-md bg-evergreen p-4 text-small text-white">Evergreen 700</div>
+        <div class="rounded-md bg-olive p-4 text-small text-green-900">Olive</div>
+        <div class="rounded-md bg-accent p-4 text-small text-green-900">Accent</div>
+        <div class="rounded-md border border-line bg-paper p-4 text-small text-green-900">Paper</div>
+        <div class="rounded-md border border-line bg-green-100 p-4 text-small text-green-900">Green 100</div>
+      </div>
+    </section>
+
+    <section class="mt-10 border-t border-line pt-10">
+      <h2 class="font-sans text-small text-olive">Buttons (contrast-correct)</h2>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button class="rounded-md bg-green-700 px-5 py-3 font-sans text-body font-bold text-white">
+          Get a Quote
+        </button>
+        <button class="rounded-md bg-accent px-5 py-3 font-sans text-body font-bold text-green-900">
+          See Our Services
+        </button>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
