@@ -109,7 +109,7 @@ const labelClass = "block font-sans text-small font-bold text-green-900";
       if (res.ok && data.ok) {
         form.reset();
         if (status) {
-          status.textContent = "Thanks — we've got it. Jesse will reach out shortly.";
+          status.textContent = "Thanks, we've got it. Jesse will reach out shortly.";
           status.className = "font-sans text-small font-bold text-green-800";
         }
       } else {
@@ -118,7 +118,7 @@ const labelClass = "block font-sans text-small font-bold text-green-900";
     } catch {
       if (status) {
         status.textContent =
-          "Sorry — that didn't go through. Please call (919) 441-7049 and we'll take care of you.";
+          "Sorry, that didn't go through. Please call (919) 441-7049 and we'll take care of you.";
         status.className = "font-sans text-small font-bold text-error";
       }
     } finally {

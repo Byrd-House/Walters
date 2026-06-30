@@ -10,7 +10,7 @@ const posterOpt = await getImage({ src: poster, width: 1600, format: "webp" });
 <section class="relative isolate overflow-hidden bg-green-900">
   <Image
     src={poster}
-    alt="A Walter's project in Chapel Hill — fresh mulch beds and a newly finished driveway"
+    alt="A Walter's project in Chapel Hill with fresh mulch beds and a newly finished driveway"
     widths={[768, 1280, 1920]}
     sizes="100vw"
     loading="eager"
@@ -31,18 +31,18 @@ const posterOpt = await getImage({ src: poster, width: 1600, format: "webp" });
     <source src="/video/hero.mp4" type="video/mp4" />
   </video>
 
-  <div class="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/50 to-green-900/25"></div>
+  <div class="absolute inset-0 bg-green-900/55"></div>
 
-  <div class="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 lg:px-6">
+  <div class="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-4 py-28 text-center lg:px-6">
     <div class="max-w-3xl">
-      <h1 class="font-display text-h1 text-white">
+      <h1 class="font-heading text-h1 font-bold text-white">
         Landscaping and construction in Chapel Hill, done right.
       </h1>
-      <p class="mt-5 max-w-2xl font-sans text-body text-green-50 sm:text-lg/relaxed">
-        A full-service landscaping and construction company that sweats the details — sharp edges,
+      <p class="mx-auto mt-6 max-w-2xl font-sans text-body text-green-50 sm:text-lg/relaxed">
+        A full-service landscaping and construction company that sweats the details: sharp edges,
         clean lines, and work we're proud to put our name on.
       </p>
-      <div class="mt-8 flex flex-wrap gap-4">
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a
           href="/services"
           class="rounded-md border border-white/40 px-6 py-3 font-sans text-body font-bold text-white transition-colors hover:bg-white/10"

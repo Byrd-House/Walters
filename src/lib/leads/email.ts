@@ -9,7 +9,7 @@ function escapeHtml(s: string): string {
 }
 
 function renderHtml(lead: Lead): string {
-  const services = lead.services.map((s) => titleBySlug[s] ?? s).join(", ") || "—";
+  const services = lead.services.map((s) => titleBySlug[s] ?? s).join(", ") || "(none)";
   const row = (label: string, value: string) =>
     `<tr><td style="padding:4px 12px 4px 0;color:#5e7e6f;">${label}</td><td style="padding:4px 0;color:#1d3028;"><strong>${value}</strong></td></tr>`;
   return `
@@ -20,11 +20,11 @@ function renderHtml(lead: Lead): string {
       ${row("Phone", escapeHtml(lead.phone))}
       ${row("Email", escapeHtml(lead.email))}
       ${row("Services", escapeHtml(services))}
-      ${row("Address", escapeHtml(lead.address ?? "—"))}
-      ${row("Timing", escapeHtml(lead.timing ?? "—"))}
+      ${row("Address", escapeHtml(lead.address ?? "(none)"))}
+      ${row("Timing", escapeHtml(lead.timing ?? "(none)"))}
     </table>
     <p style="margin-top:16px;color:#5e7e6f;font-size:14px">Message</p>
-    <p style="white-space:pre-wrap;color:#1d3028;font-size:14px">${escapeHtml(lead.message ?? "—")}</p>
+    <p style="white-space:pre-wrap;color:#1d3028;font-size:14px">${escapeHtml(lead.message ?? "(none)")}</p>
     <hr style="border:none;border-top:1px solid #d8d2c7;margin:16px 0" />
     <p style="color:#7a8360;font-size:12px">Source: ${escapeHtml(lead.source)} · ${escapeHtml(lead.submittedAt)}</p>
   </div>`;
@@ -47,7 +47,7 @@ export const emailSink: LeadDestination = {
         from,
         to,
         reply_to: lead.email,
-        subject: `New quote request — ${lead.name}`,
+        subject: `New quote request: ${lead.name}`,
         html: renderHtml(lead),
       }),
     });

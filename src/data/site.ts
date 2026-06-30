@@ -4,7 +4,7 @@
 
 export const site = {
   name: "Walter's",
-  legalName: "Walter's — Landscaping & Construction",
+  legalName: "Walter's Landscaping & Construction",
   tagline: "Landscaping & Construction",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
@@ -43,7 +43,7 @@ export const serviceGroups: ServiceGroup[] = [
     slug: "lawn-care",
     title: "Lawn Care & Maintenance",
     oneLiner:
-      "Mowing, trimming, and seasonal upkeep that keeps your property sharp all year — including leaf and storm cleanup when the weather turns.",
+      "Mowing, trimming, and seasonal upkeep that keeps your property sharp all year, including leaf and storm cleanup when the weather turns.",
   },
   {
     slug: "landscaping-mulch",
@@ -55,7 +55,7 @@ export const serviceGroups: ServiceGroup[] = [
     slug: "patios-construction",
     title: "Patios, Walkways & Construction",
     oneLiner:
-      "Pavers, walkways, porches, decks, driveways, concrete, and excavation. The bigger builds — the work that lasts.",
+      "Pavers, walkways, porches, decks, driveways, concrete, and excavation. The bigger builds, the work that lasts.",
     emphasized: true,
   },
   {

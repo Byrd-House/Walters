@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     ip = undefined;
   }
   if (!rateLimit(ip).ok) {
-    return json({ ok: false, error: "Too many requests — please call (919) 441-7049." }, 429);
+    return json({ ok: false, error: "Too many requests. Please call (919) 441-7049." }, 429);
   }
 
   let parsed;
