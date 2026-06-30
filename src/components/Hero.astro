@@ -1,0 +1,73 @@
+---
+import { Image, getImage } from "astro:assets";
+import poster from "../assets/photos/IMG_7808.JPG";
+
+// Optimized poster for the <video> (desktop motion only). The <Image> below is
+// the always-present base layer (LCP) for mobile + reduced-motion users.
+const posterOpt = await getImage({ src: poster, width: 1600, format: "webp" });
+---
+
+<section class="relative isolate overflow-hidden bg-green-900">
+  <Image
+    src={poster}
+    alt="A Walter's project in Chapel Hill — fresh mulch beds and a newly finished driveway"
+    widths={[768, 1280, 1920]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+
+  <video
+    class="hero-video absolute inset-0 h-full w-full object-cover"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="none"
+    poster={posterOpt.src}
+    aria-hidden="true"
+  >
+    <source src="/video/hero.mp4" type="video/mp4" />
+  </video>
+
+  <div class="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/50 to-green-900/25"></div>
+
+  <div class="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 lg:px-6">
+    <div class="max-w-3xl">
+      <h1 class="font-display text-h1 text-white">
+        Landscaping and construction in Chapel Hill, done right.
+      </h1>
+      <p class="mt-5 max-w-2xl font-sans text-body text-green-50 sm:text-lg/relaxed">
+        A full-service landscaping and construction company that sweats the details — sharp edges,
+        clean lines, and work we're proud to put our name on.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a
+          href="/services"
+          class="rounded-md border border-white/40 px-6 py-3 font-sans text-body font-bold text-white transition-colors hover:bg-white/10"
+        >
+          See Our Services
+        </a>
+        <a
+          href="#quote"
+          class="rounded-md bg-accent px-6 py-3 font-sans text-body font-bold text-green-900 transition hover:brightness-95"
+        >
+          Get a Quote
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Desktop-only motion; reduced-motion + mobile users keep the still poster. */
+  .hero-video {
+    display: none;
+  }
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .hero-video {
+      display: block;
+    }
+  }
+</style>

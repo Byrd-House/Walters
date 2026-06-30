@@ -1,0 +1,76 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { serviceGroups } from "../data/site";
+import lawn from "../assets/photos/IMG_8001.JPG";
+import mulch from "../assets/photos/IMG_7815.JPG";
+import construction from "../assets/photos/IMG_8466.JPG";
+import cleanup from "../assets/photos/IMG_8136.JPG";
+
+const imgBySlug: Record<string, ImageMetadata> = {
+  "lawn-care": lawn,
+  "landscaping-mulch": mulch,
+  "patios-construction": construction,
+  "cleanup-removal": cleanup,
+};
+
+const featured = serviceGroups.find((s) => s.emphasized)!;
+const rest = serviceGroups.filter((s) => !s.emphasized);
+---
+
+<section class="mx-auto max-w-7xl px-4 py-20 lg:px-6 lg:py-28">
+  <div class="max-w-2xl">
+    <h2 class="font-heading text-h2 font-bold text-green-900">We do whatever needs doing.</h2>
+    <p class="mt-4 font-sans text-body text-green-800">
+      Lawn care, landscaping, hardscapes, and construction — one crew, start to finish. If you can
+      dream it, we can get it done.
+    </p>
+  </div>
+
+  <a
+    href={`/services#${featured.slug}`}
+    class="group mt-12 grid overflow-hidden rounded-xl border border-line bg-paper lg:grid-cols-2"
+  >
+    <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-80">
+      <Image
+        src={imgBySlug[featured.slug]}
+        alt="Excavation and construction work on a Walter's project"
+        widths={[640, 960, 1280]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    </div>
+    <div class="flex flex-col justify-center gap-4 p-8 lg:p-12">
+      <h3 class="font-heading text-h3 font-bold text-green-900">{featured.title}</h3>
+      <p class="font-sans text-body text-green-800">{featured.oneLiner}</p>
+      <span class="font-sans text-body font-bold text-green-700 transition-colors group-hover:text-green-900">
+        Explore construction →
+      </span>
+    </div>
+  </a>
+
+  <div class="mt-6 grid gap-6 sm:grid-cols-3">
+    {
+      rest.map((s) => (
+        <a
+          href={`/services#${s.slug}`}
+          class="group overflow-hidden rounded-xl border border-line bg-paper"
+        >
+          <div class="relative aspect-[4/3] overflow-hidden">
+            <Image
+              src={imgBySlug[s.slug]}
+              alt=""
+              widths={[400, 640]}
+              sizes="(min-width: 640px) 33vw, 100vw"
+              class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+          <div class="p-6">
+            <h3 class="font-heading text-xl font-bold text-green-900">{s.title}</h3>
+            <p class="mt-2 font-sans text-small text-green-800">{s.oneLiner}</p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,61 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = site.legalName,
+  description = "Full-service landscaping and construction in Chapel Hill, NC. Lawn care, mulch, patios, walkways, and construction — done right.",
+  image = "/og-default.jpg",
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+
+// schema.org LocalBusiness (brief §8). sameAs is added once social URLs are confirmed.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: site.legalName,
+  telephone: site.phone,
+  url: Astro.site?.href,
+  image: ogImage,
+  areaServed: site.areas.map((a) => ({ "@type": "City", name: a })),
+  address: {
+    "@type": "PostalAddress",
+    addressRegion: site.region,
+    postalCode: site.zip,
+    addressCountry: "US",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: site.rating.value,
+    reviewCount: site.rating.count,
+  },
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.legalName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

@@ -1,0 +1,37 @@
+---
+import { Image } from "astro:assets";
+import photo from "../assets/photos/IMG_7883.JPG";
+---
+
+<section class="mx-auto max-w-7xl px-4 py-20 lg:px-6 lg:py-28">
+  <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="order-2 lg:order-1">
+      <h2 class="font-heading text-h2 font-bold text-green-900">We love grass.</h2>
+      <div class="mt-6 space-y-5 font-sans text-body text-green-800">
+        <p>
+          For us it's in the details: the stripes in a fresh-cut lawn, the clean edge where the
+          grass meets the walk, the contrast of new mulch, the permanence of a paver path that'll
+          still look right in twenty years.
+        </p>
+        <p>
+          That love is where our professionalism comes from. A good yard is where you host friends,
+          where the kids actually go outside. Every person on our crew takes pride in the work
+          because they know it makes that kind of difference.
+        </p>
+        <p>
+          And it carries into how we treat you. We got into the service business to serve — which is
+          why we hold the line on fair prices and clear communication, start to finish.
+        </p>
+      </div>
+    </div>
+    <div class="order-1 lg:order-2">
+      <Image
+        src={photo}
+        alt="A freshly cut, healthy lawn with crisp edges and mature plantings"
+        widths={[640, 960, 1280]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        class="aspect-[4/3] w-full rounded-lg object-cover"
+      />
+    </div>
+  </div>
+</section>

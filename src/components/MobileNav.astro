@@ -1,0 +1,67 @@
+---
+import { site, nav } from "../data/site";
+---
+
+<div class="lg:hidden">
+  <button
+    type="button"
+    id="mobile-nav-toggle"
+    aria-expanded="false"
+    aria-controls="mobile-nav-panel"
+    class="inline-flex h-11 w-11 items-center justify-center rounded-md text-green-900 hover:bg-green-100"
+  >
+    <span class="sr-only">Open menu</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <div
+    id="mobile-nav-panel"
+    hidden
+    class="absolute inset-x-0 top-full border-b border-line bg-paper shadow-[0_8px_24px_rgba(29,48,40,0.08)]"
+  >
+    <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4" aria-label="Mobile">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class="rounded-md px-3 py-3 font-sans text-body text-green-900 hover:bg-green-100"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a href={site.phoneHref} class="rounded-md px-3 py-3 font-sans text-body font-bold text-green-900 hover:bg-green-100">
+        {site.phone}
+      </a>
+      <a
+        href="/contact"
+        class="mt-1 rounded-md bg-green-700 px-3 py-3 text-center font-sans text-body font-bold text-white hover:bg-green-800"
+      >
+        Get a Quote
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+  const btn = document.getElementById("mobile-nav-toggle");
+  const panel = document.getElementById("mobile-nav-panel");
+
+  function setOpen(open: boolean) {
+    if (!btn || !panel) return;
+    btn.setAttribute("aria-expanded", String(open));
+    panel.toggleAttribute("hidden", !open);
+  }
+
+  btn?.addEventListener("click", () => {
+    setOpen(btn.getAttribute("aria-expanded") !== "true");
+  });
+
+  // Close on Escape and when a link is chosen.
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+  panel?.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+</script>

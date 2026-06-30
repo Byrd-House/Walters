@@ -1,0 +1,129 @@
+---
+import { serviceGroups } from "../data/site";
+
+const inputClass =
+  "w-full rounded-md border border-line bg-white px-4 py-3 font-sans text-body text-green-900 placeholder:text-green-400 focus:border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700/25";
+const labelClass = "block font-sans text-small font-bold text-green-900";
+---
+
+<form id="quote-form" method="POST" action="/api/quote" class="space-y-5">
+  {/* Honeypot — hidden from real users; a filled value flags a bot */}
+  <div class="hidden" aria-hidden="true">
+    <label>
+      Company website
+      <input type="text" name="company_url" tabindex="-1" autocomplete="off" />
+    </label>
+  </div>
+  <input type="hidden" name="form_rendered_at" id="form_rendered_at" value="" />
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <label class={labelClass} for="qf-name">Name</label>
+      <input class={inputClass} id="qf-name" name="name" type="text" required autocomplete="name" />
+    </div>
+    <div>
+      <label class={labelClass} for="qf-phone">Phone</label>
+      <input class={inputClass} id="qf-phone" name="phone" type="tel" required autocomplete="tel" />
+    </div>
+  </div>
+
+  <div>
+    <label class={labelClass} for="qf-email">Email</label>
+    <input class={inputClass} id="qf-email" name="email" type="email" required autocomplete="email" />
+  </div>
+
+  <fieldset>
+    <legend class={labelClass}>What can we help with?</legend>
+    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+      {
+        serviceGroups.map((s) => (
+          <label class="flex cursor-pointer items-center gap-2.5 rounded-md border border-line bg-white px-3 py-2.5 font-sans text-small text-green-900 has-[:checked]:border-green-700 has-[:checked]:bg-green-50">
+            <input type="checkbox" name="services" value={s.slug} class="h-4 w-4 accent-green-700" />
+            {s.title}
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div>
+    <label class={labelClass} for="qf-address">Address or neighborhood</label>
+    <input class={inputClass} id="qf-address" name="address" type="text" autocomplete="street-address" />
+  </div>
+
+  <div>
+    <label class={labelClass} for="qf-timing">
+      Preferred timing <span class="font-normal text-green-600">(optional)</span>
+    </label>
+    <select class={inputClass} id="qf-timing" name="timing">
+      <option value="">No preference</option>
+      <option value="asap">As soon as possible</option>
+      <option value="few-weeks">Within a few weeks</option>
+      <option value="planning">Just planning ahead</option>
+    </select>
+  </div>
+
+  <div>
+    <label class={labelClass} for="qf-message">Tell us about your project</label>
+    <textarea class={`${inputClass} min-h-32`} id="qf-message" name="message" rows="4"></textarea>
+  </div>
+
+  <button
+    type="submit"
+    id="qf-submit"
+    class="w-full rounded-md bg-green-700 px-6 py-3.5 font-sans text-body font-bold text-white transition-colors hover:bg-green-800 disabled:opacity-60 sm:w-auto"
+  >
+    Request my quote
+  </button>
+
+  <p id="quote-status" role="status" aria-live="polite" class="font-sans text-small"></p>
+</form>
+
+<script>
+  const form = document.getElementById("quote-form") as HTMLFormElement | null;
+  const status = document.getElementById("quote-status");
+  const submit = document.getElementById("qf-submit") as HTMLButtonElement | null;
+  const renderedAt = document.getElementById("form_rendered_at") as HTMLInputElement | null;
+
+  const stamp = () => {
+    if (renderedAt) renderedAt.value = String(Date.now());
+  };
+  stamp();
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    if (submit) submit.disabled = true;
+    if (status) {
+      status.textContent = "Sending…";
+      status.className = "font-sans text-small text-green-700";
+    }
+
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        form.reset();
+        if (status) {
+          status.textContent = "Thanks — we've got it. Jesse will reach out shortly.";
+          status.className = "font-sans text-small font-bold text-green-800";
+        }
+      } else {
+        throw new Error(data.error || "failed");
+      }
+    } catch {
+      if (status) {
+        status.textContent =
+          "Sorry — that didn't go through. Please call (919) 441-7049 and we'll take care of you.";
+        status.className = "font-sans text-small font-bold text-error";
+      }
+    } finally {
+      if (submit) submit.disabled = false;
+      stamp();
+    }
+  });
+</script>

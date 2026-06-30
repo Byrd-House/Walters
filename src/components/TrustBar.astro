@@ -1,0 +1,17 @@
+---
+import { site } from "../data/site";
+const areas = site.areas.join(" · ");
+---
+
+<div class="bg-green-900 text-green-50">
+  <div
+    class="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 py-2 text-caption sm:justify-between lg:px-6"
+  >
+    <p class="flex items-center gap-1.5">
+      <span aria-hidden="true" class="text-accent">★</span>
+      <span><strong class="font-bold">{site.rating.value.toFixed(1)}</strong> · {site.rating.count} reviews</span>
+    </p>
+    <p class="hidden sm:block">{areas}</p>
+    <a href={site.phoneHref} class="font-bold hover:text-white">{site.phone}</a>
+  </div>
+</div>
