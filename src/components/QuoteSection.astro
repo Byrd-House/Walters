@@ -1,26 +1,16 @@
 ---
 import QuoteForm from "./QuoteForm.astro";
-import { site } from "../data/site";
 ---
 
 <section id="quote" class="scroll-mt-24 bg-green-800">
   <div class="mx-auto max-w-7xl px-4 py-20 lg:px-6 lg:py-28">
     <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
       <div>
-        <h2 class="font-heading text-h2 font-bold text-white">Tell us about your project.</h2>
+        <h2 class="font-heading text-h2 font-bold text-white">Take your weekends back.</h2>
         <p class="mt-5 max-w-md font-sans text-body text-green-100">
-          Fill out the form with what you have in mind. Don't have it all nailed down? We'll swing by
-          for a look. Take back your weekends, and let us handle the rest.
+          Fill out the form with what you have in mind. Don't have it all nailed down? We'll come by
+          for a free consultation.
         </p>
-        <div class="mt-8 space-y-2 font-sans text-body text-green-100">
-          <p>
-            Prefer to call?
-            <a href={site.phoneHref} class="font-bold text-white hover:underline">{site.phone}</a>
-          </p>
-          <p class="font-sans text-small text-green-200">
-            Fully insured · serving {site.areas.join(", ")} &amp; surrounding.
-          </p>
-        </div>
       </div>
       <div class="rounded-xl bg-paper p-6 shadow-[0_12px_40px_rgba(29,48,40,0.18)] sm:p-8">
         <QuoteForm />

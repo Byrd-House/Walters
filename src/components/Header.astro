@@ -3,34 +3,34 @@ import { Image } from "astro:assets";
 import logo from "../assets/logo/logo.png";
 import { site, nav } from "../data/site";
 import MobileNav from "./MobileNav.astro";
+
+// Logo wordmark: drop the apostrophe and letter-space it. The canonical brand
+// name (site.name) keeps its apostrophe everywhere else (SEO, alt text, JSON-LD).
+const wordmark = site.name.replace(/['']/g, "");
 ---
 
-<header class="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur">
+<header class="border-b border-line bg-paper">
   <div class="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
     <a href="/" class="flex items-center gap-3" aria-label={`${site.legalName}, home`}>
-      <Image src={logo} alt="" width={48} height={48} class="h-11 w-11 object-contain" />
+      <Image src={logo} alt="" width={64} height={64} class="h-14 w-14 object-contain" />
       <span class="flex flex-col">
-        <span class="font-display text-2xl leading-none text-green-900">{site.name}</span>
+        <span class="font-display text-2xl uppercase tracking-[0.1em] leading-none text-green-900">{wordmark}</span>
         <span class="mt-1 font-sans text-[0.65rem] font-medium uppercase tracking-[0.14em] text-green-700">
           {site.tagline}
         </span>
       </span>
     </a>
 
-    <nav class="hidden items-center gap-7 lg:flex" aria-label="Primary">
-      {
-        nav.map((item) => (
-          <a href={item.href} class="font-sans text-body text-green-800 transition-colors hover:text-green-900">
-            {item.label}
-          </a>
-        ))
-      }
-    </nav>
-
-    <div class="hidden items-center gap-5 lg:flex">
-      <a href={site.phoneHref} class="font-sans text-body font-bold text-green-900 hover:text-green-700">
-        {site.phone}
-      </a>
+    <div class="hidden items-center gap-8 lg:flex">
+      <nav class="flex items-center gap-7" aria-label="Primary">
+        {
+          nav.map((item) => (
+            <a href={item.href} class="font-sans text-body text-green-800 transition-colors hover:text-green-900">
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
       <a
         href="/contact"
         class="rounded-md bg-green-700 px-4 py-2.5 font-sans text-body font-bold text-white transition-colors hover:bg-green-800"

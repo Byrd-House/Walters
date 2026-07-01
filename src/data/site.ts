@@ -33,6 +33,7 @@ export type ServiceGroup = {
   slug: string;
   title: string;
   oneLiner: string;
+  items?: string[];
   emphasized?: boolean;
 };
 
@@ -44,18 +45,21 @@ export const serviceGroups: ServiceGroup[] = [
     title: "Lawn Care & Maintenance",
     oneLiner:
       "Mowing, trimming, and seasonal upkeep that keeps your property sharp all year, including leaf and storm cleanup when the weather turns.",
+    items: ["Mowing", "Trimming & edging", "Leaf cleanup", "Storm cleanup", "Seasonal upkeep"],
   },
   {
     slug: "landscaping-mulch",
-    title: "Landscaping & Mulch",
+    title: "Mulching",
     oneLiner:
-      "Custom landscape design, planting, and fresh mulch that makes the whole yard look finished and cared for.",
+      "Fresh mulch and clean-edged beds that make the whole yard look finished and cared for.",
+    items: ["Fresh mulch", "Custom landscaping", "Planting", "Bed edging"],
   },
   {
     slug: "patios-construction",
     title: "Patios, Walkways & Construction",
     oneLiner:
       "Pavers, walkways, porches, decks, driveways, concrete, and excavation. The bigger builds, the work that lasts.",
+    items: ["Patios & pavers", "Walkways", "Porches & decks", "Driveways", "Concrete", "Excavation"],
     emphasized: true,
   },
   {
@@ -63,5 +67,6 @@ export const serviceGroups: ServiceGroup[] = [
     title: "Cleanup & Removal",
     oneLiner:
       "Fallen-tree and debris removal, junk removal, and storm cleanup. One call and it's gone.",
+    items: ["Fallen tree & debris removal", "Junk removal", "Storm cleanup"],
   },
 ];

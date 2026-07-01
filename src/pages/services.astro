@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteSection from "../components/QuoteSection.astro";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import { serviceGroups, site } from "../data/site";
+import lawn from "../assets/photos/IMG_8001.JPG";
+import mulch from "../assets/photos/IMG_7815.JPG";
+import construction from "../assets/photos/IMG_8466.JPG";
+import cleanup from "../assets/photos/IMG_8136.JPG";
+
+const imgBySlug: Record<string, ImageMetadata> = {
+  "lawn-care": lawn,
+  "landscaping-mulch": mulch,
+  "patios-construction": construction,
+  "cleanup-removal": cleanup,
+};
+---
+
+<BaseLayout
+  title={`Services · ${site.legalName}`}
+  description="Lawn care & maintenance, mulching, patios & walkways, construction, and cleanup & removal across Chapel Hill, Durham, Hillsborough, and Meadowmont."
+>
+  <section class="mx-auto max-w-7xl px-4 pb-6 pt-16 lg:px-6 lg:pb-10 lg:pt-24">
+    <div class="max-w-3xl">
+      <h1 class="font-heading text-h2 font-bold text-green-900">
+        We're a full-service landscaping and construction company.
+      </h1>
+      <p class="mt-4 max-w-2xl font-sans text-body text-green-800 sm:text-lg/relaxed">
+        If you can dream it, we can get it done. Here's the work we take on — from weekly upkeep to
+        the bigger builds that last.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 pb-16 lg:px-6 lg:pb-24">
+    {
+      serviceGroups.map((s, i) => (
+        <section id={s.slug} class="grid scroll-mt-24 items-center gap-8 border-t border-line py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
+          <div class:list={["relative aspect-[4/3] overflow-hidden rounded-xl", i % 2 === 1 && "lg:order-2"]}>
+            <Image
+              src={imgBySlug[s.slug]}
+              alt={`${s.title} — a Walter's project`}
+              widths={[480, 768, 1024]}
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              class="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+          <div>
+            <h2 class:list={["font-heading font-bold text-green-900", s.emphasized ? "text-h2" : "text-h3"]}>
+              {s.title}
+            </h2>
+            <p class="mt-3 max-w-md font-sans text-body text-green-800">{s.oneLiner}</p>
+            {s.items && (
+              <p class="mt-5 font-sans text-small text-green-700">{s.items.join(" · ")}</p>
+            )}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+
+  <QuoteSection />
+</BaseLayout>

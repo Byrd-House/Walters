@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import Seo from "../components/Seo.astro";
-import TrustBar from "../components/TrustBar.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
@@ -31,7 +30,6 @@ const { title, description, image, noindex } = Astro.props;
     <Seo title={title} description={description} image={image} noindex={noindex} />
   </head>
   <body class="flex min-h-screen flex-col">
-    <TrustBar />
     <Header />
     <main class="flex-1">
       <slot />

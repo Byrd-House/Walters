@@ -15,5 +15,19 @@ const testimonials = defineCollection({
   }),
 });
 
-// NOTE: blog + services collections are added when those pages are built.
-export const collections = { testimonials };
+// Blog / Resources — dev-maintained Markdown. Drafts are hidden in production
+// builds (shown in `astro dev`). Never invent stats, reviews, or claims in posts.
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    author: z.string().default("Walter's"),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { testimonials, blog };

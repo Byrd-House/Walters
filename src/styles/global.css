@@ -79,6 +79,13 @@
 /* Base page defaults */
 :root {
   color-scheme: light;
+  /* Header height — used so in-page anchor targets clear the nav. */
+  --header-h: 5.25rem;
+}
+
+/* In-page anchors (e.g. #quote) scroll clear of the overlapping header. */
+:where([id]) {
+  scroll-margin-top: calc(var(--header-h) + 0.5rem);
 }
 
 body {

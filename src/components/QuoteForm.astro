@@ -6,7 +6,7 @@ const inputClass =
 const labelClass = "block font-sans text-small font-bold text-green-900";
 ---
 
-<form id="quote-form" method="POST" action="/api/quote" class="space-y-5">
+<form id="quote-form" method="POST" action="/api/quote" class="space-y-4">
   {/* Honeypot — hidden from real users; a filled value flags a bot */}
   <div class="hidden" aria-hidden="true">
     <label>
@@ -52,20 +52,8 @@ const labelClass = "block font-sans text-small font-bold text-green-900";
   </div>
 
   <div>
-    <label class={labelClass} for="qf-timing">
-      Preferred timing <span class="font-normal text-green-600">(optional)</span>
-    </label>
-    <select class={inputClass} id="qf-timing" name="timing">
-      <option value="">No preference</option>
-      <option value="asap">As soon as possible</option>
-      <option value="few-weeks">Within a few weeks</option>
-      <option value="planning">Just planning ahead</option>
-    </select>
-  </div>
-
-  <div>
     <label class={labelClass} for="qf-message">Tell us about your project</label>
-    <textarea class={`${inputClass} min-h-32`} id="qf-message" name="message" rows="4"></textarea>
+    <textarea class={`${inputClass} min-h-24`} id="qf-message" name="message" rows="3"></textarea>
   </div>
 
   <button

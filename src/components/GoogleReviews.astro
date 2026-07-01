@@ -1,0 +1,30 @@
+---
+import { site } from "../data/site";
+const { value, count } = site.rating;
+const filled = Math.round(value);
+// TODO[CONFIRM]: link this badge to the real Google Business reviews URL once
+// provided. Rendered as a static badge until then (no invented link).
+// Styled for the dark hero (gold stars, light text).
+---
+
+<div
+  class="inline-flex items-center gap-2 text-white"
+  aria-label={`Rated ${value.toFixed(1)} out of 5 from ${count} Google reviews`}
+>
+  <span class="flex gap-0.5" aria-hidden="true">
+    {
+      Array.from({ length: 5 }).map((_, i) => (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill={i < filled ? "#FBBC04" : "rgba(255,255,255,0.35)"}
+        >
+          <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.401 8.169L12 18.896l-7.335 3.868 1.401-8.169L.132 9.21l8.2-1.192z" />
+        </svg>
+      ))
+    }
+  </span>
+  <span class="font-sans text-small font-bold">{value.toFixed(1)}</span>
+  <span class="font-sans text-small text-green-100">on Google · {count} reviews</span>
+</div>

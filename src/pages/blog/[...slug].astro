@@ -1,0 +1,94 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => (import.meta.env.PROD ? !data.draft : true));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+---
+
+<BaseLayout title={`${post.data.title} · ${site.legalName}`} description={post.data.description}>
+  <article class="mx-auto max-w-3xl px-4 py-16 lg:px-6 lg:py-24">
+    <a href="/blog" class="font-sans text-small font-bold text-green-700 hover:text-green-900">← All posts</a>
+    <h1 class="mt-6 font-heading text-h2 font-bold text-green-900">{post.data.title}</h1>
+    <div class="mt-4 flex flex-wrap items-center gap-x-3 font-sans text-small text-green-600">
+      <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
+      {post.data.tags.length > 0 && <span>· {post.data.tags.join(" · ")}</span>}
+    </div>
+
+    <div class="post-body mt-10">
+      <Content />
+    </div>
+
+    <div class="mt-14 border-t border-line pt-8">
+      <a
+        href="/contact"
+        class="inline-block rounded-md bg-green-700 px-5 py-3 font-sans text-body font-bold text-white transition-colors hover:bg-green-800"
+      >
+        Get a Quote
+      </a>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-body {
+    color: var(--color-green-800);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .post-body :global(h2) {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-green-900);
+    font-size: var(--text-h3);
+    line-height: 1.2;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .post-body :global(h3) {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-green-900);
+    font-size: 1.375rem;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .post-body :global(p) {
+    margin-bottom: 1.25rem;
+  }
+  .post-body :global(ul) {
+    margin: 0 0 1.25rem 1.25rem;
+    list-style: disc;
+  }
+  .post-body :global(li) {
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+  }
+  .post-body :global(a) {
+    color: var(--color-green-700);
+    text-decoration: underline;
+  }
+  .post-body :global(a:hover) {
+    color: var(--color-green-900);
+  }
+  .post-body :global(strong) {
+    color: var(--color-green-900);
+    font-weight: 700;
+  }
+  .post-body :global(blockquote) {
+    border-left: 3px solid var(--color-line);
+    padding-left: 1rem;
+    font-style: italic;
+    color: var(--color-green-700);
+    margin: 0 0 1.25rem;
+  }
+</style>
