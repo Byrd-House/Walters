@@ -22,7 +22,7 @@ const rest = serviceGroups.filter((s) => !s.emphasized);
   <div class="max-w-2xl">
     <h2 class="font-heading text-h2 font-bold text-green-900">Service worth paying for.</h2>
     <p class="mt-4 font-sans text-body text-green-800">
-      Lawn care, mulching, hardscapes, and construction. If you can dream it, we can get it done.
+      Lawn care, mulching, hardscapes, and construction. We've spent the last 10 years perfecting what we do.
     </p>
   </div>
 
@@ -30,20 +30,24 @@ const rest = serviceGroups.filter((s) => !s.emphasized);
     href={`/services#${featured.slug}`}
     class="group mt-12 grid overflow-hidden rounded-xl border border-line bg-paper lg:grid-cols-2"
   >
-    <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-80">
+    <div class="relative aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-80">
       <Image
         src={imgBySlug[featured.slug]}
         alt="Excavation and construction work on a Walter's project"
         widths={[640, 960, 1280]}
         sizes="(min-width: 1024px) 50vw, 100vw"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
       />
     </div>
     <div class="flex flex-col justify-center gap-4 p-8 lg:p-12">
       <h3 class="font-heading text-h3 font-bold text-green-900">{featured.title}</h3>
       <p class="font-sans text-body text-green-800">{featured.oneLiner}</p>
       <span class="font-sans text-body font-bold text-green-700 transition-colors group-hover:text-green-900">
-        Explore construction →
+        Explore construction
+        <span
+          class="ml-1 inline-block transition-transform duration-300 group-hover:translate-x-1.5"
+          aria-hidden="true"
+        >→</span>
       </span>
     </div>
   </a>

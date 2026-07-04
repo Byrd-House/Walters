@@ -9,9 +9,9 @@ const items = (await getCollection("testimonials")).sort(
 
 <section class="bg-green-50">
   <div class="mx-auto max-w-7xl px-4 py-20 lg:px-6 lg:py-28">
-    <div class="max-w-2xl">
+    <div class="mx-auto max-w-2xl text-center">
       <h2 class="font-heading text-h2 font-bold text-green-900">
-        Rated {site.rating.value.toFixed(1)} across {site.rating.count} reviews, and counting.
+        Rated {site.rating.value.toFixed(1)} stars across {site.rating.count} reviews, and counting.
       </h2>
     </div>
 
@@ -19,12 +19,37 @@ const items = (await getCollection("testimonials")).sort(
       items.length > 0 ? (
         <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {items.map((t) => (
-            <li class="rounded-lg border border-line bg-paper p-6">
-              <p class="font-sans text-body text-green-900">“{t.data.quote}”</p>
-              <p class="mt-4 font-sans text-small font-bold text-green-800">{t.data.author}</p>
-              {t.data.location && (
-                <p class="font-sans text-caption text-green-600">{t.data.location}</p>
-              )}
+            <li class="flex flex-col rounded-lg border border-line bg-paper p-6">
+              <div
+                class="flex gap-0.5 text-[#FBBC04]"
+                role="img"
+                aria-label={`Rated ${t.data.rating} out of 5 stars`}
+              >
+                {Array.from({ length: t.data.rating }).map(() => (
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.447a1 1 0 00-.363 1.118l1.287 3.957c.3.921-.755 1.688-1.54 1.118l-3.367-2.447a1 1 0 00-1.176 0l-3.367 2.447c-.784.57-1.838-.197-1.539-1.118l1.286-3.957a1 1 0 00-.362-1.118L2.28 9.384c-.783-.57-.38-1.81.588-1.81h4.161a1 1 0 00.951-.69l1.286-3.957z" />
+                  </svg>
+                ))}
+              </div>
+              <p class="mt-4 font-sans text-body text-green-900">“{t.data.quote}”</p>
+              <div class="mt-6 flex items-center gap-3">
+                {t.data.avatar && (
+                  <img
+                    src={t.data.avatar}
+                    alt=""
+                    width="44"
+                    height="44"
+                    loading="lazy"
+                    class="h-11 w-11 shrink-0 rounded-full object-cover"
+                  />
+                )}
+                <div>
+                  <p class="font-sans text-small font-bold text-green-800">{t.data.author}</p>
+                  {t.data.location && (
+                    <p class="font-sans text-caption text-green-600">{t.data.location}</p>
+                  )}
+                </div>
+              </div>
             </li>
           ))}
         </ul>

@@ -9,10 +9,10 @@ import MobileNav from "./MobileNav.astro";
 const wordmark = site.name.replace(/['']/g, "");
 ---
 
-<header class="border-b border-line bg-paper">
+<header class="relative z-50 border-b border-line bg-paper">
   <div class="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 lg:px-6">
     <a href="/" class="flex items-center gap-3" aria-label={`${site.legalName}, home`}>
-      <Image src={logo} alt="" width={64} height={64} class="h-14 w-14 object-contain" />
+      <Image src={logo} alt="" width={128} height={128} class="h-16 w-16 object-contain" />
       <span class="flex flex-col">
         <span class="font-display text-2xl uppercase tracking-[0.1em] leading-none text-green-900">{wordmark}</span>
         <span class="mt-1 font-sans text-[0.65rem] font-medium uppercase tracking-[0.14em] text-green-700">
@@ -33,7 +33,7 @@ const wordmark = site.name.replace(/['']/g, "");
       </nav>
       <a
         href="/contact"
-        class="rounded-md bg-green-700 px-4 py-2.5 font-sans text-body font-bold text-white transition-colors hover:bg-green-800"
+        class="rounded-md bg-green-700 px-4 py-2.5 font-sans text-body font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-lg hover:shadow-green-900/25 active:translate-y-0"
       >
         Get a Quote
       </a>

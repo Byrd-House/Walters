@@ -18,6 +18,10 @@ const {
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
 
+// Browser-tab title drops the apostrophe (Walter's → Walters); the canonical
+// name keeps it everywhere else (og/twitter titles, JSON-LD, site_name).
+const tabTitle = title.replace(/['’]/g, "");
+
 // schema.org LocalBusiness (brief §8). sameAs is added once social URLs are confirmed.
 const jsonLd = {
   "@context": "https://schema.org",
@@ -41,7 +45,7 @@ const jsonLd = {
 };
 ---
 
-<title>{title}</title>
+<title>{tabTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}

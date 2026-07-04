@@ -18,18 +18,18 @@ const wordmark = site.name.replace(/['']/g, "");
 
     <div>
       <h2 class="font-sans text-small font-bold text-white">Get in touch</h2>
-      <ul class="mt-3 space-y-2 font-sans text-small text-green-100">
-        <li><a href={site.phoneHref} class="hover:text-white">{site.phone}</a></li>
+      <ul class="mt-3 space-y-1 font-sans text-small text-green-100">
+        <li><a href={site.phoneHref} class="inline-block py-1.5 hover:text-white">{site.phone}</a></li>
         {/* TODO[CONFIRM]: business email — omitted until confirmed (no fake data) */}
-        {site.email && <li><a href={`mailto:${site.email}`} class="hover:text-white">{site.email}</a></li>}
-        <li><a href="/contact" class="hover:text-white">Get a quote</a></li>
+        {site.email && <li><a href={`mailto:${site.email}`} class="inline-block py-1.5 hover:text-white">{site.email}</a></li>}
+        <li><a href="/contact" class="inline-block py-1.5 hover:text-white">Get a quote</a></li>
       </ul>
     </div>
 
     <div>
       <h2 class="font-sans text-small font-bold text-white">Service area</h2>
       <p class="mt-3 max-w-xs font-sans text-small text-green-100">
-        {areas} &amp; surrounding ({site.zip})
+        {areas}
       </p>
       {/* TODO[CONFIRM]: business hours — omitted until confirmed */}
       {site.hours && <p class="mt-2 font-sans text-small text-green-200">{site.hours}</p>}
@@ -37,15 +37,15 @@ const wordmark = site.name.replace(/['']/g, "");
 
     <nav aria-label="Footer">
       <h2 class="font-sans text-small font-bold text-white">Explore</h2>
-      <ul class="mt-3 space-y-2 font-sans text-small text-green-100">
-        {nav.map((item) => <li><a href={item.href} class="hover:text-white">{item.label}</a></li>)}
+      <ul class="mt-3 space-y-1 font-sans text-small text-green-100">
+        {nav.map((item) => <li><a href={item.href} class="inline-block py-1.5 hover:text-white">{item.label}</a></li>)}
       </ul>
       {/* TODO[CONFIRM]: social profile URLs (handle "JW Landscape and Maintenance") */}
       {
         (site.social.facebook || site.social.instagram) && (
           <ul class="mt-4 flex gap-4 font-sans text-small text-green-100">
-            {site.social.facebook && <li><a href={site.social.facebook} class="hover:text-white">Facebook</a></li>}
-            {site.social.instagram && <li><a href={site.social.instagram} class="hover:text-white">Instagram</a></li>}
+            {site.social.facebook && <li><a href={site.social.facebook} class="inline-block py-1.5 hover:text-white">Facebook</a></li>}
+            {site.social.instagram && <li><a href={site.social.instagram} class="inline-block py-1.5 hover:text-white">Instagram</a></li>}
           </ul>
         )
       }

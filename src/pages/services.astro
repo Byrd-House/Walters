@@ -27,8 +27,8 @@ const imgBySlug: Record<string, ImageMetadata> = {
         We're a full-service landscaping and construction company.
       </h1>
       <p class="mt-4 max-w-2xl font-sans text-body text-green-800 sm:text-lg/relaxed">
-        If you can dream it, we can get it done. Here's the work we take on — from weekly upkeep to
-        the bigger builds that last.
+        If you can dream it, we can get it done. Here's the work we take on, from weekly upkeep to
+        quality work that will last decades.
       </p>
     </div>
   </section>
@@ -40,7 +40,7 @@ const imgBySlug: Record<string, ImageMetadata> = {
           <div class:list={["relative aspect-[4/3] overflow-hidden rounded-xl", i % 2 === 1 && "lg:order-2"]}>
             <Image
               src={imgBySlug[s.slug]}
-              alt={`${s.title} — a Walter's project`}
+              alt={`${s.title}, a Walter's project`}
               widths={[480, 768, 1024]}
               sizes="(min-width: 1024px) 50vw, 100vw"
               class="absolute inset-0 h-full w-full object-cover"

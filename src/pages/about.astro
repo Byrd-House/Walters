@@ -3,23 +3,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import QuoteSection from "../components/QuoteSection.astro";
 import { Image } from "astro:assets";
 import { site } from "../data/site";
-import portrait from "../assets/photos/IMG_7883.JPG";
+import portrait from "../assets/photos/IMG_8285.JPG";
 ---
 
 <BaseLayout
   title={`About · ${site.legalName}`}
-  description="Walter's is an owner-operated landscaping and construction company in Chapel Hill, founded by Jesse Walters. Five years in, fully insured, built on word of mouth."
+  description="Walter's is an owner operated landscaping and construction company in Chapel Hill, founded by Jesse Walters. Five years in, fully insured, built on word of mouth."
 >
   <section class="mx-auto max-w-7xl px-4 pb-12 pt-16 lg:px-6 lg:pb-20 lg:pt-24">
     <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
       <div class="max-w-2xl">
         <h1 class="font-heading text-h2 font-bold text-green-900">
-          Owner-operated, and obsessed with the details.
+          Owner operated, and obsessed with the details.
         </h1>
         <div class="mt-6 space-y-5 font-sans text-body text-green-800 sm:text-lg/relaxed">
           <p>
             I started this company at 17. I loved being outside and I loved the idea of giving people
-            a little peace of mind about their own homes — that was enough to get the gears turning.
+            a little peace of mind about their own homes. That was enough to get the gears turning.
           </p>
           <p>
             What began as a small handyman-and-landscaping operation has grown into the full
@@ -30,10 +30,10 @@ import portrait from "../assets/photos/IMG_7883.JPG";
           {/* TODO[CONFIRM]: customers-served figures. Discovery noted "hundreds in 2023 / countless over 5 yrs"; the draft's "thousands" wording is unconfirmed, so we use "countless" below. */}
           <p>
             Five years in, we've cared for countless yards and projects across the greater Chapel Hill
-            and Durham area — and we'd welcome whatever you've got next. My team and I have one job:
+            and Durham area, and we'd welcome whatever you've got next. My team and I have one job:
             excellent service, top-quality results, every time.
           </p>
-          <p class="font-sans text-body font-bold text-green-700">— Jesse Walters</p>
+          <p class="font-sans text-body font-bold text-green-700">– Jesse Walters</p>
         </div>
       </div>
       <div class="relative aspect-[4/5] overflow-hidden rounded-xl">
@@ -46,25 +46,6 @@ import portrait from "../assets/photos/IMG_7883.JPG";
         />
       </div>
     </div>
-
-    <dl class="mt-14 grid gap-x-8 gap-y-6 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
-      <div>
-        <dt class="font-sans text-small text-green-600">Founded by</dt>
-        <dd class="mt-1 font-heading text-h3 font-bold text-green-900">Jesse Walters</dd>
-      </div>
-      <div>
-        <dt class="font-sans text-small text-green-600">Team</dt>
-        <dd class="mt-1 font-heading text-h3 font-bold text-green-900">A crew of 3</dd>
-      </div>
-      <div>
-        <dt class="font-sans text-small text-green-600">Serving</dt>
-        <dd class="mt-1 font-heading text-h3 font-bold text-green-900">Chapel Hill &amp; Durham</dd>
-      </div>
-      <div>
-        <dt class="font-sans text-small text-green-600">Coverage</dt>
-        <dd class="mt-1 font-heading text-h3 font-bold text-green-900">Fully insured</dd>
-      </div>
-    </dl>
   </section>
 
   <QuoteSection />

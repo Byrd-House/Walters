@@ -8,12 +8,12 @@ export const site = {
   tagline: "Landscaping & Construction",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
-  email: null as string | null, // TODO[CONFIRM]: real business email
+  email: "jbwalters3327@gmail.com" as string | null,
   hours: null as string | null, // TODO[CONFIRM]: business hours
   areas: ["Chapel Hill", "Durham", "Hillsborough", "Meadowmont"],
   zip: "27516",
   region: "NC",
-  rating: { value: 5.0, count: 25 },
+  rating: { value: 5.0, count: 26 },
   insured: true,
   // Active social handle: "JW Landscape and Maintenance" (Facebook + Nextdoor).
   social: {
@@ -58,7 +58,7 @@ export const serviceGroups: ServiceGroup[] = [
     slug: "patios-construction",
     title: "Patios, Walkways & Construction",
     oneLiner:
-      "Pavers, walkways, porches, decks, driveways, concrete, and excavation. The bigger builds, the work that lasts.",
+      "Pavers, walkways, porches, decks, driveways, concrete, and excavation. Quality work that will last decades.",
     items: ["Patios & pavers", "Walkways", "Porches & decks", "Driveways", "Concrete", "Excavation"],
     emphasized: true,
   },

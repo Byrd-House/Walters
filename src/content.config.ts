@@ -11,6 +11,7 @@ const testimonials = defineCollection({
     rating: z.number().min(1).max(5).default(5),
     quote: z.string(),
     service: z.string().optional(),
+    avatar: z.string().optional(),
     order: z.number().default(0),
   }),
 });

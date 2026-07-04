@@ -7,7 +7,7 @@ const areas = site.areas.join(", ");
 
 <BaseLayout
   title={`Contact · ${site.legalName}`}
-  description="Get a quote from Walter's — Landscaping & Construction. Call (919) 441-7049 or send us your project. Serving Chapel Hill, Durham, Hillsborough, and Meadowmont."
+  description="Get a quote from Walter's Landscaping & Construction. Call (919) 441-7049 or send us your project. Serving Chapel Hill, Durham, Hillsborough, and Meadowmont."
 >
   <section class="mx-auto max-w-7xl px-4 py-16 lg:px-6 lg:py-24">
     <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -15,7 +15,7 @@ const areas = site.areas.join(", ");
         <h1 class="font-heading text-h2 font-bold text-green-900">Let's talk about your project.</h1>
         {/* TODO[CONFIRM]: final contact subhead copy (the draft is a lorem-ipsum placeholder). */}
         <p class="mt-5 max-w-md font-sans text-body text-green-800">
-          Phone, email, or the form — however you'd like to reach us. Tell us what you have in mind and
+          Phone, email, or the form, however you'd like to reach us. Tell us what you have in mind and
           we'll take it from there.
         </p>
 
@@ -23,33 +23,31 @@ const areas = site.areas.join(", ");
           <div>
             <dt class="font-sans text-small font-bold text-green-900">Phone</dt>
             <dd class="mt-1">
-              <a href={site.phoneHref} class="font-sans text-body text-green-700 hover:text-green-900">
+              <a href={site.phoneHref} class="inline-block py-1 font-sans text-body text-green-700 hover:text-green-900">
                 {site.phone}
               </a>
             </dd>
           </div>
           <div>
             <dt class="font-sans text-small font-bold text-green-900">Email</dt>
-            {/* TODO[CONFIRM]: business email */}
-            <dd class="mt-1 font-sans text-body text-green-800">
-              {site.email ?? <span class="text-green-500">Coming soon — call or use the form.</span>}
+            <dd class="mt-1 font-sans text-body">
+              {site.email ? (
+                <a href={`mailto:${site.email}`} class="inline-block py-1 text-green-700 hover:text-green-900">
+                  {site.email}
+                </a>
+              ) : (
+                <span class="text-green-800">Coming soon. Call or use the form.</span>
+              )}
             </dd>
           </div>
           <div>
             <dt class="font-sans text-small font-bold text-green-900">Service area</dt>
             <dd class="mt-1 max-w-sm font-sans text-body text-green-800">
-              {areas} &amp; surrounding ({site.zip})
+              {areas}
             </dd>
           </div>
           <div>
-            <dt class="font-sans text-small font-bold text-green-900">Hours</dt>
-            {/* TODO[CONFIRM]: business hours */}
-            <dd class="mt-1 font-sans text-body text-green-800">
-              {site.hours ?? <span class="text-green-500">Coming soon — reach out anytime.</span>}
-            </dd>
-          </div>
-          <div>
-            <dt class="font-sans text-small font-bold text-green-900">Insured</dt>
+            <dt class="font-sans text-small font-bold text-green-900">Insurance</dt>
             <dd class="mt-1 font-sans text-body text-green-800">Fully insured.</dd>
           </div>
         </dl>

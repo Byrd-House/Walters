@@ -54,13 +54,13 @@ const areas = site.areas.join(" · ");
       <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a
           href="/services"
-          class="rounded-md border border-white/40 px-6 py-3 font-sans text-body font-bold text-white transition-colors hover:bg-white/10"
+          class="rounded-md border border-white/40 px-6 py-3 font-sans text-body font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white/10 hover:shadow-lg hover:shadow-black/30 active:translate-y-0"
         >
           See Our Services
         </a>
         <a
           href="#quote"
-          class="rounded-md bg-accent px-6 py-3 font-sans text-body font-bold text-green-900 transition hover:brightness-95"
+          class="rounded-md bg-accent px-6 py-3 font-sans text-body font-bold text-green-900 transition duration-200 hover:-translate-y-0.5 hover:brightness-95 hover:shadow-lg hover:shadow-accent/40 active:translate-y-0"
         >
           Get a Quote
         </a>
@@ -70,11 +70,11 @@ const areas = site.areas.join(" · ");
 </section>
 
 <style>
-  /* Desktop-only motion; reduced-motion + mobile users keep the still poster. */
+  /* Motion on all viewports; reduced-motion users keep the still poster. */
   .hero-video {
     display: none;
   }
-  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) {
     .hero-video {
       display: block;
     }
