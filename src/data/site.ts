@@ -3,14 +3,14 @@
 // never as invented data.
 
 export const site = {
-  name: "Walter's",
+  name: "Jesse Walters",
   legalName: "Walter's Landscaping & Construction",
-  tagline: "Landscaping & Construction",
+  tagline: "Landscaping",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
   email: "jbwalters3327@gmail.com" as string | null,
   hours: null as string | null, // TODO[CONFIRM]: business hours
-  areas: ["Chapel Hill", "Durham", "Hillsborough", "Meadowmont"],
+  areas: ["Chapel Hill", "Durham", "Hillsborough"],
   zip: "27516",
   region: "NC",
   rating: { value: 5.0, count: 26 },
