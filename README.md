@@ -69,7 +69,7 @@ console** until these are set, so the form works immediately.
 | Var | Purpose |
 |---|---|
 | `RESEND_API_KEY`, `LEAD_FALLBACK_EMAIL`, `LEAD_FROM_EMAIL` | Email fallback (the guaranteed lead capture) via [Resend](https://resend.com). Verify a sending domain. |
-| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION` | Jobber GraphQL integration (best-effort CRM sync). |
+| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REDIRECT_URI`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION`, `JOBBER_LEAD_CUSTOM_FIELD_ID` | Jobber GraphQL integration (best-effort CRM sync — creates a Client per lead). See setup below. |
 
 ### How the lead pipeline behaves
 
@@ -84,14 +84,37 @@ joins automatically once its env vars are set — no code change.
 
 ### Jobber setup (when credentials are available)
 
-1. Create an app in Jobber's [Developer Center](https://developer.getjobber.com/).
-2. Run the OAuth flow once to mint a **refresh token**; put it in `JOBBER_REFRESH_TOKEN`.
-3. **[VERIFY-LIVE]** in Jobber's GraphiQL before launch: the current `X-JOBBER-GRAPHQL-VERSION`
-   date, the exact `ClientCreateInput` field names (`emails`/`phones`/`billingAddress`), and
-   whether Refresh Token Rotation is on (if so, persist the rotating token in a store, not env).
-   These are isolated in `src/lib/jobber/mutations.ts` and `oauth.ts`.
-4. Creating a client auto-captures the app name as the Jobber **lead source**. New-request
-   notifications deliver the lead to Jesse's phone — verify they're enabled.
+> **Full step-by-step walkthrough:** [`docs/JOBBER_INTEGRATION.md`](docs/JOBBER_INTEGRATION.md)
+> (developer-app + no-seat path, with exact commands). The summary below is the overview.
+
+Jobber's API **cannot create a "Request"** (those mutations were removed in 2023 and never
+re-added), and client **notes** aren't writable either. So each website lead is synced as a
+**Client**, with the request details (services, timing, message) stored in a Client **custom
+text field**. The email sink always captures the full lead regardless — Jobber is convenience,
+not the system of record.
+
+1. **Create the app** — in Jobber's [Developer Center](https://developer.getjobber.com/),
+   create a new app with **write access to clients**, set a **Redirect URI** (e.g.
+   `http://localhost:5173/callback`), and turn **Refresh Token Rotation OFF**. Rotation is only
+   required to publish to Jobber's Marketplace; as a private/custom integration the refresh
+   token stays long-lived and can live in an env var (no token store needed). Copy the Client
+   ID/Secret into `.env`.
+2. **Mint a refresh token** — with `JOBBER_CLIENT_ID/SECRET/REDIRECT_URI` set in `.env`:
+   ```bash
+   node scripts/jobber-auth.mjs         # prints the authorize URL
+   # open it, approve, copy the ?code=… from the redirect, then:
+   node scripts/jobber-auth.mjs <code>  # prints JOBBER_REFRESH_TOKEN
+   ```
+   Paste the printed token into `JOBBER_REFRESH_TOKEN`.
+3. **(Optional) request details on the client** — in Jobber, create a **text custom field** on
+   Clients (e.g. "Website request"), then set `JOBBER_LEAD_CUSTOM_FIELD_ID` to its
+   `customFieldConfigurationId` (find it in GraphiQL via `customFieldConfigurations`). Without
+   it, the client is created without those details.
+4. **[VERIFY-LIVE]** in Jobber's GraphiQL before launch: the current `X-JOBBER-GRAPHQL-VERSION`
+   date and the exact `ClientCreateInput` field names (`emails`/`phones`/`billingAddress`/
+   `customFields`). These are isolated in `src/lib/jobber/mutations.ts` and `oauth.ts`.
+5. Creating a client auto-captures the app name as the Jobber **lead source**. Confirm Jesse's
+   new-client notifications are enabled so leads reach his phone.
 
 ## Deploy
 

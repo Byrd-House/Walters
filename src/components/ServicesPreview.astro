@@ -2,27 +2,27 @@
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { serviceGroups } from "../data/site";
-import lawn from "../assets/photos/IMG_8001.JPG";
-import mulch from "../assets/photos/IMG_7815.JPG";
-import construction from "../assets/photos/IMG_8466.JPG";
-import cleanup from "../assets/photos/IMG_8136.JPG";
+import maintenance from "../assets/photos/IMG_8004-crop.JPG";
+import mulch from "../assets/photos/IMG_7808.JPG";
+import grading from "../assets/photos/IMG_8285.JPG";
+import hardscaping from "../assets/photos/IMG_7894.JPG";
 
 const imgBySlug: Record<string, ImageMetadata> = {
-  "lawn-care": lawn,
-  "landscaping-mulch": mulch,
-  "patios-construction": construction,
-  "cleanup-removal": cleanup,
+  "property-maintenance": maintenance,
+  "mulch-pinestraw": mulch,
+  "grading-drainage": grading,
+  "hardscaping": hardscaping,
 };
 
 const featured = serviceGroups.find((s) => s.emphasized)!;
-const rest = serviceGroups.filter((s) => !s.emphasized);
+const rest = serviceGroups.filter((s) => s.homeCard);
 ---
 
 <section class="mx-auto max-w-7xl px-4 py-20 lg:px-6 lg:py-28">
   <div class="max-w-2xl">
     <h2 class="font-heading text-h2 font-bold text-green-900">Service worth paying for.</h2>
     <p class="mt-4 font-sans text-body text-green-800">
-      Lawn care, mulching, hardscapes, and construction. We've spent the last 10 years perfecting what we do.
+      Property maintenance, mulch, grading, hardscaping, and more. We've spent the last 10 years perfecting what we do.
     </p>
   </div>
 
@@ -33,7 +33,7 @@ const rest = serviceGroups.filter((s) => !s.emphasized);
     <div class="relative aspect-[4/3] overflow-hidden lg:aspect-auto lg:min-h-80">
       <Image
         src={imgBySlug[featured.slug]}
-        alt="Excavation and construction work on a Walter's project"
+        alt="Property maintenance on a Jesse Walters project"
         widths={[640, 960, 1280]}
         sizes="(min-width: 1024px) 50vw, 100vw"
         class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
@@ -43,7 +43,7 @@ const rest = serviceGroups.filter((s) => !s.emphasized);
       <h3 class="font-heading text-h3 font-bold text-green-900">{featured.title}</h3>
       <p class="font-sans text-body text-green-800">{featured.oneLiner}</p>
       <span class="font-sans text-body font-bold text-green-700 transition-colors group-hover:text-green-900">
-        Explore construction
+        Explore maintenance
         <span
           class="ml-1 inline-block transition-transform duration-300 group-hover:translate-x-1.5"
           aria-hidden="true"

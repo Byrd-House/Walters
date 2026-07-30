@@ -4,22 +4,28 @@ import QuoteSection from "../components/QuoteSection.astro";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { serviceGroups, site } from "../data/site";
-import lawn from "../assets/photos/IMG_8001.JPG";
-import mulch from "../assets/photos/IMG_7815.JPG";
-import construction from "../assets/photos/IMG_8466.JPG";
-import cleanup from "../assets/photos/IMG_8136.JPG";
+import maintenance from "../assets/photos/IMG_8004-crop.JPG";
+import mulch from "../assets/photos/IMG_7808.JPG";
+import grading from "../assets/photos/IMG_8285.JPG";
+import hardscaping from "../assets/photos/IMG_7894.JPG";
+import installation from "../assets/photos/IMG_7896.JPG";
+import tree from "../assets/photos/IMG_2637.JPG";
+import demolition from "../assets/photos/IMG_8292.JPG";
 
 const imgBySlug: Record<string, ImageMetadata> = {
-  "lawn-care": lawn,
-  "landscaping-mulch": mulch,
-  "patios-construction": construction,
-  "cleanup-removal": cleanup,
+  "property-maintenance": maintenance,
+  "mulch-pinestraw": mulch,
+  "grading-drainage": grading,
+  "hardscaping": hardscaping,
+  "landscape-installations": installation,
+  "tree-services": tree,
+  "demolition": demolition,
 };
 ---
 
 <BaseLayout
   title={`Services · ${site.legalName}`}
-  description="Lawn care & maintenance, mulching, patios & walkways, construction, and cleanup & removal across Chapel Hill, Durham, and Hillsborough."
+  description="Property maintenance, mulch & pinestraw, grading & drainage, hardscaping, landscape installations, tree services, and demolition across Chapel Hill, Durham, and Hillsborough."
 >
   <section class="mx-auto max-w-7xl px-4 pb-6 pt-16 lg:px-6 lg:pb-10 lg:pt-24">
     <div class="max-w-3xl">
