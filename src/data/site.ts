@@ -34,39 +34,65 @@ export type ServiceGroup = {
   title: string;
   oneLiner: string;
   items?: string[];
-  emphasized?: boolean;
+  emphasized?: boolean; // big featured card on home + larger heading on services
+  homeCard?: boolean; // one of the three small cards under the featured one on home
 };
 
-// Four plain-language groups (copy doc). "Patios, Walkways & Construction" is
-// the emphasized differentiator.
+// Seven plain-language groups (client services list). Property Maintenance is
+// the flagship (emphasized); mulch, grading, and hardscaping are the three
+// smaller cards previewed on the home page (homeCard).
 export const serviceGroups: ServiceGroup[] = [
   {
-    slug: "lawn-care",
-    title: "Lawn Care & Maintenance",
+    slug: "property-maintenance",
+    title: "Property Maintenance",
     oneLiner:
-      "Mowing, trimming, and seasonal upkeep that keeps your property sharp all year, including leaf and storm cleanup when the weather turns.",
-    items: ["Mowing", "Trimming & edging", "Leaf cleanup", "Storm cleanup", "Seasonal upkeep"],
-  },
-  {
-    slug: "landscaping-mulch",
-    title: "Mulching",
-    oneLiner:
-      "Fresh mulch and clean-edged beds that make the whole yard look finished and cared for.",
-    items: ["Fresh mulch", "Custom landscaping", "Planting", "Bed edging"],
-  },
-  {
-    slug: "patios-construction",
-    title: "Patios, Walkways & Construction",
-    oneLiner:
-      "Pavers, walkways, porches, decks, driveways, concrete, and excavation. Quality work that will last decades.",
-    items: ["Patios & pavers", "Walkways", "Porches & decks", "Driveways", "Concrete", "Excavation"],
+      "Mowing, trimming, edging, and seasonal cleanups that keep your property sharp week to week and all year long.",
+    items: ["Mowing", "Trimming & edging", "Leaf & storm cleanup", "Bed maintenance", "Seasonal upkeep"],
     emphasized: true,
   },
   {
-    slug: "cleanup-removal",
-    title: "Cleanup & Removal",
+    slug: "mulch-pinestraw",
+    title: "Mulch & Pinestraw",
     oneLiner:
-      "Fallen-tree and debris removal, junk removal, and storm cleanup. One call and it's gone.",
-    items: ["Fallen tree & debris removal", "Junk removal", "Storm cleanup"],
+      "Fresh mulch or pinestraw and clean-edged beds that make the whole yard look finished and cared for.",
+    items: ["Fresh mulch", "Pinestraw", "Bed edging", "Seasonal refreshes"],
+    homeCard: true,
+  },
+  {
+    slug: "grading-drainage",
+    title: "Grading & Drainage Solutions",
+    oneLiner:
+      "Regrading, swales, and drainage work that moves water away from your home and keeps the yard from washing out.",
+    items: ["Regrading", "Drainage & swales", "French drains", "Erosion control"],
+    homeCard: true,
+  },
+  {
+    slug: "hardscaping",
+    title: "Hardscaping",
+    oneLiner:
+      "Patios, walkways, retaining walls, and stone work built to hold up and look good for decades.",
+    items: ["Patios & pavers", "Walkways", "Retaining walls", "Stone & flagstone", "Concrete"],
+    homeCard: true,
+  },
+  {
+    slug: "landscape-installations",
+    title: "Landscape Installations",
+    oneLiner:
+      "New plantings, beds, and sod, designed to fit your home and the way you use the yard.",
+    items: ["Plantings", "New beds", "Sod & seeding", "Yard makeovers"],
+  },
+  {
+    slug: "tree-services",
+    title: "Tree Services",
+    oneLiner:
+      "Trimming, pruning, and removals that keep your trees healthy and clear of the house.",
+    items: ["Pruning & trimming", "Limb removal", "Tree & stump removal", "Debris haul-off"],
+  },
+  {
+    slug: "demolition",
+    title: "Demolition",
+    oneLiner:
+      "Tearing out old driveways, patios, decks, and structures and hauling it away so the next project starts clean.",
+    items: ["Driveway & patio removal", "Deck & structure teardown", "Site clearing", "Debris haul-off"],
   },
 ];
