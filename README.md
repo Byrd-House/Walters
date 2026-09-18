@@ -8,7 +8,7 @@ a lead (email fallback now, Jobber when credentials land).
 
 - **Astro 7** (static output) + TypeScript
 - **Tailwind v4** via `@tailwindcss/vite` — design tokens are CSS-first in `src/styles/global.css` (`@theme`)
-- **Astro Content Collections** for dev-maintained content (testimonials now; blog + services next)
+- **Astro Content Collections** for dev-maintained content (testimonials)
 - **One serverless function** `src/pages/api/quote.ts` → lead pipeline (`src/lib/leads/`)
 - Deploy: **Vercel** (adapter configured). Netlify documented below.
 
@@ -35,7 +35,7 @@ src/
   layouts/BaseLayout.astro
   lib/leads/              lead pipeline: schema (validation), email, jobber, console, pipeline
   lib/jobber/             Jobber OAuth + GraphQL client + mutations
-  pages/                  index (Home). services/about/contact/blog → next
+  pages/                  index (Home), services, about, contact
   pages/api/quote.ts      serverless lead endpoint (prerender = false)
   styles/global.css       Tailwind import + design tokens (@theme)
 public/
@@ -138,4 +138,4 @@ the sitemap, and OG tags.
 
 - `npm audit` currently reports advisories in transitive build deps; review before launch
   (do not blindly `--force`, which pulls breaking changes).
-- Pages built so far: **Home**. Services, About, Contact, and Blog are next.
+- Pages: **Home**, **Services**, **About**, **Contact**.

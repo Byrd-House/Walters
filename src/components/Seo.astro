@@ -6,6 +6,8 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  /** Extra page-level JSON-LD (e.g. Service graph on /services, FAQPage). */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -13,23 +15,34 @@ const {
   description = "Full-service landscaping and construction in Chapel Hill, NC. Lawn care, mulch, patios, walkways, and construction, done right.",
   image = "/og-default.jpg",
   noindex = false,
+  schema,
 } = Astro.props;
+
+const extraSchema = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
 
-// Browser-tab title drops the apostrophe (Walter's → Walters); the canonical
-// name keeps it everywhere else (og/twitter titles, JSON-LD, site_name).
-const tabTitle = title.replace(/['’]/g, "");
+const tabTitle = title;
 
-// schema.org LocalBusiness (brief §8). sameAs is added once social URLs are confirmed.
+// schema.org LocalBusiness (brief §8). `alternateName` + `sameAs` are the entity
+// signals: they tell search and answer engines that this site, the Google
+// Business Profile, and the social accounts are one business rather than three.
+// No openingHours — the business keeps no fixed hours (site.hours is null), and
+// omitting the property is correct where inventing one would not be.
+const sameAs = [site.social.facebook, site.social.instagram].filter(Boolean) as string[];
+
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "LandscapingBusiness",
   name: site.legalName,
+  alternateName: site.gbpName,
+  description,
   telephone: site.phone,
+  ...(site.email ? { email: site.email } : {}),
   url: Astro.site?.href,
   image: ogImage,
+  ...(sameAs.length ? { sameAs } : {}),
   areaServed: site.areas.map((a) => ({ "@type": "City", name: a })),
   address: {
     "@type": "PostalAddress",
@@ -63,3 +76,4 @@ const jsonLd = {
 <meta name="twitter:image" content={ogImage} />
 
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+{extraSchema.map((entry) => <script type="application/ld+json" set:html={JSON.stringify(entry)} />)}

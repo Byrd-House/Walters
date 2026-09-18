@@ -13,7 +13,7 @@ const areas = site.areas.join(" · ");
 <section class="relative isolate overflow-hidden bg-green-900">
   <Image
     src={poster}
-    alt="A Walter's project in Chapel Hill with fresh mulch beds and a newly finished driveway"
+    alt="A Jesse Walters Landscaping project in Chapel Hill with fresh mulch beds and a newly finished driveway"
     widths={[768, 1280, 1920]}
     sizes="100vw"
     loading="eager"
@@ -65,6 +65,11 @@ const areas = site.areas.join(" · ");
           Get a Quote
         </a>
       </div>
+      {
+        site.insured && (
+          <p class="mt-4 font-sans text-small italic text-green-100">Fully insured</p>
+        )
+      }
     </div>
   </div>
 </section>

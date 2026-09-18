@@ -3,36 +3,58 @@
 // never as invented data.
 
 export const site = {
+  // Display brand. The header lockup splits it: wordmark "JESSE WALTERS" over
+  // the "LANDSCAPING" rule, so the two read as one name.
   name: "Jesse Walters",
-  legalName: "Walter's Landscaping & Construction",
+  legalName: "Jesse Walters Landscaping",
+  // Google Business Profile name. Differs from legalName above — kept so
+  // structured data can declare both and answer engines resolve them as one
+  // business. TODO[CONFIRM]: exact GBP spelling before the profile is linked.
+  gbpName: "Jesse Walters Landscape & Maintenance",
   tagline: "Landscaping",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
   email: "jbwalters3327@gmail.com" as string | null,
-  hours: null as string | null, // TODO[CONFIRM]: business hours
+  // Confirmed 2026-09-18: no fixed business hours, so no openingHours is
+  // emitted in JSON-LD. Omission is correct here — inventing hours would be
+  // worse than having none.
+  hours: null as string | null,
   areas: ["Chapel Hill", "Durham", "Hillsborough"],
   zip: "27516",
   region: "NC",
   rating: { value: 5.0, count: 26 },
   insured: true,
-  // Active social handle: "JW Landscape and Maintenance" (Facebook + Nextdoor).
+  // Analytics + advertising. The privacy policy renders its cookie and
+  // third-party disclosures from these flags, so flip a flag in the SAME change
+  // that adds the script — never before, never after. Leaving one false while
+  // the script is live understates what the site does; the reverse claims
+  // tracking that isn't running.
+  tracking: {
+    plausible: false, // cookieless, aggregate only, no personal data
+    metaPixel: false, // sets cookies; shares visit + form data with Meta for ads
+  },
+  // Public profiles found 2026-09-18; phone on the listings matches site.phone.
+  // These feed schema.org sameAs, which is how search/answer engines tie the
+  // site, the Google Business Profile, and the social accounts to one entity.
+  // TODO[CONFIRM]: verify both are the owner's current, active profiles.
   social: {
-    facebook: null as string | null, // TODO[CONFIRM]: profile URL
-    instagram: null as string | null, // TODO[CONFIRM]: profile URL
+    facebook:
+      "https://www.facebook.com/p/Jesse-Walters-Landscape-and-Maintenance-61576343244940/" as string | null,
+    instagram: "https://www.instagram.com/jwlandscapeandmaintenance/" as string | null,
   },
 };
 
 export const nav = [
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
 export type ServiceGroup = {
   slug: string;
   title: string;
-  oneLiner: string;
+  oneLiner: string; // short version — home page cards
+  intro?: string; // full opening paragraph on /services; falls back to oneLiner
   items?: string[];
   emphasized?: boolean; // big featured card on home + larger heading on services
   homeCard?: boolean; // one of the three small cards under the featured one on home
@@ -47,7 +69,12 @@ export const serviceGroups: ServiceGroup[] = [
     title: "Property Maintenance",
     oneLiner:
       "Mowing, trimming, edging, and seasonal cleanups that keep your property sharp week to week and all year long.",
-    items: ["Mowing", "Trimming & edging", "Leaf & storm cleanup", "Bed maintenance", "Seasonal upkeep"],
+    intro:
+      "Mowing, trimming, edging, and seasonal cleanups that keep your property sharp week to week and " +
+      "all year long. From spring through fall we're out weekly or biweekly for mowing, edging, " +
+      "weedeating, and blowing. From fall through winter that shifts to weekly or biweekly leaf and " +
+      "debris removal, with roof and gutter cleaning as scheduled.",
+    items: ["Mowing", "Edging & weedeating", "Blowing", "Leaf & debris removal", "Roof & gutter cleaning"],
     emphasized: true,
   },
   {
@@ -55,7 +82,16 @@ export const serviceGroups: ServiceGroup[] = [
     title: "Mulch & Pinestraw",
     oneLiner:
       "Fresh mulch or pinestraw and clean-edged beds that make the whole yard look finished and cared for.",
-    items: ["Fresh mulch", "Pinestraw", "Bed edging", "Seasonal refreshes"],
+    intro:
+      "Fresh mulch or pinestraw and clean-edged beds that make the whole yard look finished and cared " +
+      "for. Either way we start with pre-installation prep, hand-pulling the active weeds to hold back " +
+      "future growth. For mulch, you pick from locally sourced cedar, pine, hardwood, or designer dyed " +
+      "red, black, or brown, and we finish the beds with metal edging so they stay sharp and distinctly " +
+      "separated from the lawn. For pinestraw, our team rolls a tucked border by hand for a clean edge. " +
+      "Both finish the same way, with a thorough blow-down of every driveway, walkway, patio, and turf " +
+      "area so the property is left neat. Removing existing plants and replanting with the filler of " +
+      "your choice is available.",
+    items: ["Cedar, pine & hardwood mulch", "Dyed mulch", "Pinestraw", "Metal bed edging", "Plant removal & replanting"],
     homeCard: true,
   },
   {
@@ -63,6 +99,9 @@ export const serviceGroups: ServiceGroup[] = [
     title: "Grading & Drainage Solutions",
     oneLiner:
       "Regrading, swales, and drainage work that moves water away from your home and keeps the yard from washing out.",
+    intro:
+      "Regrading, swales, and drainage work that moves water away from your home and keeps the yard " +
+      "from washing out — protecting your investment.",
     items: ["Regrading", "Drainage & swales", "French drains", "Erosion control"],
     homeCard: true,
   },

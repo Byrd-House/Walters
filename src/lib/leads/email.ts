@@ -32,14 +32,20 @@ function renderHtml(lead: Lead): string {
 
 // Durable capture via Resend's REST API (no SDK). Requires a verified sending
 // domain. Inert (skipped) until RESEND_API_KEY + LEAD_FALLBACK_EMAIL are set.
+// LEAD_FALLBACK_EMAIL accepts one address or a comma-separated list.
 export const emailSink: LeadDestination = {
   name: "email",
   durable: true,
   isConfigured: () => !!(env("RESEND_API_KEY") && env("LEAD_FALLBACK_EMAIL")),
   async submit(lead: Lead): Promise<LeadResult> {
     const apiKey = env("RESEND_API_KEY")!;
-    const to = env("LEAD_FALLBACK_EMAIL")!;
-    const from = env("LEAD_FROM_EMAIL") ?? "Walter's Website <onboarding@resend.dev>";
+    // Comma-separated: every address gets the lead. One bad address fails the
+    // whole send, so keep the list short and correct.
+    const to = env("LEAD_FALLBACK_EMAIL")!
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
+    const from = env("LEAD_FROM_EMAIL") ?? "Jesse Walters Landscaping <onboarding@resend.dev>";
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -51,7 +57,10 @@ export const emailSink: LeadDestination = {
         html: renderHtml(lead),
       }),
     });
-    if (!res.ok) return { ok: false, error: `resend ${res.status}` };
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      return { ok: false, error: `resend ${res.status}${detail ? `: ${detail.slice(0, 300)}` : ""}` };
+    }
     const data = (await res.json().catch(() => ({}))) as { id?: string };
     return { ok: true, id: data.id };
   },
