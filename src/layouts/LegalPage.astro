@@ -1,0 +1,61 @@
+---
+// Shared chrome for /privacy and /terms. Long-form prose at a readable measure,
+// with heading and list styles scoped here so the legal pages don't each carry a
+// wall of utility classes. Body copy stays green-800 on paper (never olive).
+interface Props {
+  title: string;
+  updated: string;
+}
+
+const { title, updated } = Astro.props;
+---
+
+<section class="mx-auto max-w-7xl px-4 pb-20 pt-16 lg:px-6 lg:pb-28 lg:pt-24">
+  <div class="max-w-2xl">
+    <h1 class="font-heading text-h2 font-bold text-green-900">{title}</h1>
+    <p class="mt-3 font-sans text-small text-green-700">Last updated {updated}</p>
+
+    <div class="legal mt-10 font-sans text-body text-green-800">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .legal :global(p) {
+    margin-bottom: 1.15rem;
+  }
+  .legal :global(h2) {
+    font-family: var(--font-heading);
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--color-green-900);
+    margin-top: 2.5rem;
+    margin-bottom: 0.85rem;
+  }
+  .legal :global(ul) {
+    margin: 0 0 1.15rem;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    list-style: disc;
+  }
+  .legal :global(li::marker) {
+    color: var(--color-line);
+  }
+  .legal :global(strong) {
+    color: var(--color-green-900);
+    font-weight: 700;
+  }
+  .legal :global(a) {
+    color: var(--color-green-700);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal :global(a:hover) {
+    color: var(--color-green-900);
+  }
+</style>

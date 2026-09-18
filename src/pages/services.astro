@@ -12,6 +12,42 @@ import installation from "../assets/photos/IMG_7896.JPG";
 import tree from "../assets/photos/IMG_2637.JPG";
 import demolition from "../assets/photos/IMG_8292.JPG";
 
+// Service schema — one entity per service group, each tied to the business and
+// its service area. Prose alone leaves a search or answer engine to infer that
+// "Mulch & Pinestraw" is a purchasable service offered here; this states it, so
+// "who does mulch installation near Chapel Hill" becomes a lookup, not a guess.
+const base = Astro.site?.href ?? "/";
+const provider = {
+  "@type": "LandscapingBusiness",
+  name: site.legalName,
+  telephone: site.phone,
+  url: base,
+};
+const areaServed = site.areas.map((a) => ({ "@type": "City", name: a }));
+
+const serviceSchema = serviceGroups.map((s) => ({
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: s.title,
+  serviceType: s.title,
+  description: s.intro ?? s.oneLiner,
+  url: new URL(`/services#${s.slug}`, base).href,
+  provider,
+  areaServed,
+  ...(s.items?.length
+    ? {
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: `${s.title} options`,
+          itemListElement: s.items.map((item) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: item },
+          })),
+        },
+      }
+    : {}),
+}));
+
 const imgBySlug: Record<string, ImageMetadata> = {
   "property-maintenance": maintenance,
   "mulch-pinestraw": mulch,
@@ -26,6 +62,7 @@ const imgBySlug: Record<string, ImageMetadata> = {
 <BaseLayout
   title={`Services · ${site.legalName}`}
   description="Property maintenance, mulch & pinestraw, grading & drainage, hardscaping, landscape installations, tree services, and demolition across Chapel Hill, Durham, and Hillsborough."
+  schema={serviceSchema}
 >
   <section class="mx-auto max-w-7xl px-4 pb-6 pt-16 lg:px-6 lg:pb-10 lg:pt-24">
     <div class="max-w-3xl">
@@ -46,7 +83,7 @@ const imgBySlug: Record<string, ImageMetadata> = {
           <div class:list={["relative aspect-[4/3] overflow-hidden rounded-xl", i % 2 === 1 && "lg:order-2"]}>
             <Image
               src={imgBySlug[s.slug]}
-              alt={`${s.title}, a Walter's project`}
+              alt={`${s.title}, a Jesse Walters Landscaping project`}
               widths={[480, 768, 1024]}
               sizes="(min-width: 1024px) 50vw, 100vw"
               class="absolute inset-0 h-full w-full object-cover"
@@ -56,9 +93,9 @@ const imgBySlug: Record<string, ImageMetadata> = {
             <h2 class:list={["font-heading font-bold text-green-900", s.emphasized ? "text-h2" : "text-h3"]}>
               {s.title}
             </h2>
-            <p class="mt-3 max-w-md font-sans text-body text-green-800">{s.oneLiner}</p>
+            <p class="mt-3 max-w-md font-sans text-body text-green-800">{s.intro ?? s.oneLiner}</p>
             {s.items && (
-              <p class="mt-5 font-sans text-small text-green-700">{s.items.join(" · ")}</p>
+              <p class="mt-5 max-w-md font-sans text-small text-green-700">{s.items.join(" · ")}</p>
             )}
           </div>
         </section>

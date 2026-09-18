@@ -1,4 +1,4 @@
-import type { Lead } from "./types";
+import type { Lead, LeadDestination, LeadResult } from "./types";
 import { consoleSink } from "./console";
 import { emailSink } from "./email";
 import { jobberSink } from "./jobber";
@@ -17,5 +17,24 @@ export async function runLeadPipeline(lead: Lead) {
 
   const bestResults = await Promise.allSettled(best.map((s) => s.submit(lead)));
 
+  logFailures(durable, durableResults);
+  logFailures(best, bestResults);
+
   return { captured, durableResults, bestResults };
+}
+
+// Surface sink failures in the platform logs (Vercel → Project → Logs).
+// Best-effort sinks fail silently by design — the visitor still sees success and
+// email still has the lead — so without this a dead Jobber refresh token or a
+// rejected field mapping goes unnoticed until someone notices the client list is
+// thin. Logs the sink name and error only, never the lead's contact details.
+function logFailures(sinks: LeadDestination[], results: PromiseSettledResult<LeadResult>[]) {
+  results.forEach((result, i) => {
+    const name = sinks[i]?.name ?? "unknown";
+    if (result.status === "rejected") {
+      console.error(`[lead:${name}] threw:`, result.reason);
+    } else if (!result.value.ok) {
+      console.error(`[lead:${name}] failed:`, result.value.error ?? "(no error message)");
+    }
+  });
 }

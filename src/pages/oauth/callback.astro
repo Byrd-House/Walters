@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../data/site";
+
+// One-time OAuth landing page for the Jobber integration bootstrap
+// (docs/JOBBER_INTEGRATION.md, step 2). Jobber redirects here with ?code=… after
+// the account owner approves access; this page just surfaces that code so it can
+// be copied and handed back. Static page — the code is read client-side and is
+// never sent anywhere. noindex: not part of the public site.
+---
+
+<BaseLayout
+  title={`Authorization code · ${site.legalName}`}
+  description="One-time authorization step."
+  noindex={true}
+>
+  <section class="mx-auto max-w-2xl px-4 py-16 lg:px-6 lg:py-24">
+    <div id="cb-pending" class="font-sans text-body text-green-800">Reading the authorization code…</div>
+
+    <div id="cb-success" hidden>
+      <h1 class="font-heading text-h3 font-bold text-green-900">You're all set.</h1>
+      <p class="mt-3 font-sans text-body text-green-800">
+        Access was approved. Copy the code below and send it back to whoever sent you this link —
+        that's the last step.
+      </p>
+
+      <div class="mt-6 rounded-xl border border-line bg-white p-4">
+        <label class="font-sans text-caption font-bold uppercase tracking-[0.12em] text-green-700" for="cb-code">
+          Authorization code
+        </label>
+        <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+          <input
+            id="cb-code"
+            type="text"
+            readonly
+            class="w-full rounded-md border border-line bg-paper px-3 py-2.5 font-mono text-small text-green-900 focus:border-green-700 focus:outline-none"
+          />
+          <button
+            id="cb-copy"
+            type="button"
+            class="shrink-0 rounded-md bg-green-700 px-4 py-2.5 font-sans text-body font-bold text-white transition duration-200 hover:bg-green-800 active:translate-y-px"
+          >
+            Copy
+          </button>
+        </div>
+        <p class="mt-3 font-sans text-caption text-green-700">
+          The code expires in a few minutes and can only be used once, so send it along now.
+        </p>
+      </div>
+    </div>
+
+    <div id="cb-denied" hidden>
+      <h1 class="font-heading text-h3 font-bold text-green-900">Access wasn't granted.</h1>
+      <p class="mt-3 font-sans text-body text-green-800">
+        The approval was cancelled or denied, so no code was issued. Open the original link again to
+        retry. <span id="cb-reason" class="text-green-700"></span>
+      </p>
+    </div>
+
+    <div id="cb-empty" hidden>
+      <h1 class="font-heading text-h3 font-bold text-green-900">Nothing to show here.</h1>
+      <p class="mt-3 font-sans text-body text-green-800">
+        This page only does something at the end of a one-time setup link. If you were looking for
+        our site, <a class="font-bold text-green-700 underline hover:text-green-900" href="/">start here</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const error = params.get("error");
+
+  const show = (id: string) => document.getElementById(id)?.removeAttribute("hidden");
+  document.getElementById("cb-pending")?.setAttribute("hidden", "");
+
+  if (code) {
+    const field = document.getElementById("cb-code") as HTMLInputElement | null;
+    if (field) field.value = code;
+    show("cb-success");
+
+    const btn = document.getElementById("cb-copy");
+    btn?.addEventListener("click", async () => {
+      if (!field) return;
+      field.select();
+      try {
+        await navigator.clipboard.writeText(field.value);
+      } catch {
+        document.execCommand("copy"); // older browsers / insecure contexts
+      }
+      btn.textContent = "Copied";
+      window.setTimeout(() => (btn.textContent = "Copy"), 2000);
+    });
+  } else if (error) {
+    const desc = params.get("error_description");
+    const reason = document.getElementById("cb-reason");
+    if (reason && desc) reason.textContent = `(${desc})`;
+    show("cb-denied");
+  } else {
+    show("cb-empty");
+  }
+</script>

@@ -9,9 +9,10 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description, image, noindex } = Astro.props;
+const { title, description, image, noindex, schema } = Astro.props;
 ---
 
 <!doctype html>
@@ -27,7 +28,7 @@ const { title, description, image, noindex } = Astro.props;
     <!-- Adobe Fonts kit: Freight ("freight-text-pro") + Avenir ("avenir-lt-pro") -->
     <link rel="stylesheet" href="https://use.typekit.net/ioy6xpq.css" />
 
-    <Seo title={title} description={description} image={image} noindex={noindex} />
+    <Seo title={title} description={description} image={image} noindex={noindex} schema={schema} />
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />

@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LegalPage from "../layouts/LegalPage.astro";
+import { site } from "../data/site";
+
+// Covers use of the WEBSITE only. Actual landscaping work is governed by the
+// written estimate/agreement signed for that job — this page must never read as
+// a service guarantee or as terms for the work itself (brand guardrails).
+---
+
+<BaseLayout
+  title={`Terms of Service · ${site.legalName}`}
+  description={`The terms that apply to using the ${site.legalName} website.`}
+>
+  <LegalPage title="Terms of Service" updated="September 18, 2026">
+    <p>
+      These terms apply to this website, operated by <strong>{site.legalName}</strong> ("we," "us").
+      By using the site you're agreeing to them. They're short on purpose.
+    </p>
+
+    <h2>What this site is</h2>
+    <p>
+      This site describes the work we do and gives you a way to ask for an estimate. Everything here
+      is general information about our services — it isn't a quote, a price list, or an offer to do
+      work at any particular price.
+    </p>
+
+    <h2>Requesting an estimate</h2>
+    <p>
+      Submitting the quote form starts a conversation. It doesn't create a contract, hold a spot on
+      our schedule, or obligate either of us to anything. We'll follow up to talk through the project
+      and, if it's a fit, put together an estimate.
+    </p>
+    <p>
+      <strong>The work itself is governed by the written estimate or agreement we sign for that
+      job</strong> — scope, price, timeline, and terms all live there. If anything on this website
+      appears to conflict with that agreement, the signed agreement controls.
+    </p>
+    <p>
+      Please give us accurate contact and property information. We rely on it to reach you and to
+      understand the site we'd be working on.
+    </p>
+
+    <h2>Photos and content</h2>
+    <p>
+      The project photography on this site is of real work by our crew. The text, photographs, logo,
+      and design are ours (or used with permission) and are protected by copyright. You're welcome to
+      view and share links to the site. Please don't copy the photography or content for your own
+      commercial use without asking us first.
+    </p>
+
+    <h2>Reviews and ratings</h2>
+    <p>
+      Any reviews or ratings shown here were written by customers and are reproduced as they were
+      given. They describe those customers' own projects. Every property is different, and someone
+      else's experience isn't a promise about yours.
+    </p>
+
+    <h2>Using the site</h2>
+    <p>
+      Don't use this site to break the law, to submit false information or someone else's contact
+      details, to send automated or bulk submissions through the form, or to try to interfere with
+      how the site runs.
+    </p>
+
+    <h2>Availability and accuracy</h2>
+    <p>
+      We keep the site accurate and current as best we can, but we don't warrant that it's free of
+      errors or always available. Service descriptions, service areas, and availability can change.
+      The site is provided "as is," without warranties of any kind, to the fullest extent the law
+      allows.
+    </p>
+
+    <h2>Limitation of liability</h2>
+    <p>
+      To the fullest extent permitted by law, we aren't liable for indirect, incidental, or
+      consequential damages arising from your use of this website. Nothing in this section limits our
+      responsibilities under a signed agreement for work we perform, or any liability that can't be
+      limited by law.
+    </p>
+
+    <h2>Links to other sites</h2>
+    <p>
+      Where we link to another site, we don't control it and aren't responsible for its content or
+      its privacy practices.
+    </p>
+
+    <h2>Privacy</h2>
+    <p>
+      How we handle the information you send through this site is covered in our{" "}
+      <a href="/privacy">Privacy Policy</a>.
+    </p>
+
+    <h2>Changes</h2>
+    <p>
+      We may update these terms. The date at the top shows when they last changed, and the current
+      version is always the one on this page.
+    </p>
+
+    <h2>Governing law</h2>
+    <p>
+      These terms are governed by the laws of the State of North Carolina, without regard to its
+      conflict-of-law rules. Any dispute about this website belongs in the state or federal courts
+      serving Orange County, North Carolina.
+    </p>
+
+    <h2>Contact us</h2>
+    <p>Questions about these terms:</p>
+    <ul>
+      <li>Phone: <a href={site.phoneHref}>{site.phone}</a></li>
+      {site.email && <li>Email: <a href={`mailto:${site.email}`}>{site.email}</a></li>}
+      <li>{site.legalName}, {site.areas[0]}, {site.region} {site.zip}</li>
+    </ul>
+  </LegalPage>
+</BaseLayout>
