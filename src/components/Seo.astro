@@ -28,8 +28,7 @@ const tabTitle = title;
 // schema.org LocalBusiness (brief §8). `alternateName` + `sameAs` are the entity
 // signals: they tell search and answer engines that this site, the Google
 // Business Profile, and the social accounts are one business rather than three.
-// No openingHours — the business keeps no fixed hours (site.hours is null), and
-// omitting the property is correct where inventing one would not be.
+// openingHoursSpecification comes from site.hours, confirmed by the owner.
 const sameAs = [site.social.facebook, site.social.instagram].filter(Boolean) as string[];
 
 // BreadcrumbList for every page below the root. Search results render these as a
@@ -98,6 +97,12 @@ const jsonLd = {
   // Owner-operated is the actual differentiator against the franchises, and it
   // gives answer engines a person to resolve "who is Jesse Walters" against.
   founder: { "@type": "Person", name: site.name },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: site.hours.days,
+    opens: site.hours.opens,
+    closes: site.hours.closes,
+  },
   priceRange: "$$",
   knowsAbout: serviceGroups.map((g) => g.title),
 };

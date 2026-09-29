@@ -15,10 +15,16 @@ export const site = {
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
   email: "jbwalters3327@gmail.com" as string | null,
-  // Confirmed 2026-09-18: no fixed business hours, so no openingHours is
-  // emitted in JSON-LD. Omission is correct here — inventing hours would be
-  // worse than having none.
-  hours: null as string | null,
+  // Confirmed by the owner 2026-09-29. `display` is the human string in the
+  // footer; `opens`/`closes` are 24h for schema.org openingHoursSpecification,
+  // which is what puts hours in the Google listing and lets an answer engine say
+  // whether the business is open right now. Keep the two in sync.
+  hours: {
+    display: "Monday–Friday, 7am–6pm",
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    opens: "07:00",
+    closes: "18:00",
+  },
   // Towns named in the hero. Deliberately the three the business is best known
   // for — the hero line has to stay readable. The full list is areasServed.
   areas: ["Chapel Hill", "Durham", "Hillsborough"],

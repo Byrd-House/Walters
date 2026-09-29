@@ -136,6 +136,9 @@ export const faqGroups: FaqGroup[] = [
     title: "Trust and credentials",
     items: [
       {
+        // Owner confirmed 2026-09-29 that there is no coverage figure to publish.
+        // "Fully insured" without a number is the answer, not a placeholder — do
+        // not add a dollar amount here later without asking him again.
         q: "Are you insured?",
         a: [
           "Yes — fully insured for both residential and commercial work, and the crew is covered by workers' compensation.",
