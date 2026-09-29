@@ -102,20 +102,33 @@ JOBBER_API_VERSION=2025-04-16   # confirmed valid in Jobber's current docs; chec
    consent time, which grants Read but silently withholds Write.
 2. **[Jesse]** If the scope changed, re-authorize (Part B again) — scope changes force
    fresh consent. Put the new `JOBBER_REFRESH_TOKEN` in `.env` and Vercel.
-3. **[Dev]** Create the field and print its configuration ID:
+3. **[Dev]** Create the fields and print their configuration IDs:
    ```bash
    node scripts/jobber-custom-field.mjs
    ```
-   Safe to re-run — if the app already owns the field it prints the existing ID rather
-   than creating a duplicate. If Write is missing it says so and tells you what to fix.
+   Safe to re-run — existing fields are reused, missing ones created. If Write is missing
+   it says so and tells you what to fix.
 
 Add the printed value to `.env` **and** Vercel → Settings → Environment Variables:
 
 ```bash
-JOBBER_LEAD_CUSTOM_FIELD_ID=<the id from above>
+JOBBER_LEAD_CUSTOM_FIELD_IDS={"services":"...","address":"...","message":"...","submitted":"..."}
 ```
 
-Jobber displays the app's name and logo beside the value wherever Jesse sees it. That
+> **One field per datum, not one packed summary.** Jobber has no multi-line text custom
+> field — the six types are Text, Area, Link, Numeric, TrueFalse and Dropdown, and "Area"
+> is a physical measurement (`length`/`width` + unit), not a text area. Newlines inside a
+> single Text value are stored but collapse when Jobber renders them, so a packed summary
+> runs together on one line. Separate fields render as separate labeled rows.
+
+> **App-created fields cannot be removed.** Jobber refuses to archive any field associated
+> with an app, including the app's own: `"Cannot archive custom field configuration … because
+> it is associated with an app"`. Editing only exposes `name` and default values. So adding a
+> field here is effectively permanent — the script renames retired ones to `… (retired)` so
+> they read as dead, and deleting them for real is a manual step in Jobber's UI, if it allows
+> it at all. Think before adding fields.
+
+Jobber displays the app's name and logo beside each value wherever Jesse sees it. That
 is expected for app-configured fields and cannot be turned off.
 
 > If you skip this, clients are still created — just without the details field (details
@@ -168,7 +181,7 @@ Local `.env` now has all six values:
 | `JOBBER_REDIRECT_URI` | Part A |
 | `JOBBER_REFRESH_TOKEN` | Part B |
 | `JOBBER_API_VERSION` | `2025-04-16` (verify latest) |
-| `JOBBER_LEAD_CUSTOM_FIELD_ID` | Part C |
+| `JOBBER_LEAD_CUSTOM_FIELD_IDS` | Part C |
 
 Set the **same values in Vercel**: Project → **Settings → Environment Variables** →
 add each for **Production** (and Preview if you want test submissions to sync). Redeploy

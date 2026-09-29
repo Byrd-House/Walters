@@ -69,7 +69,7 @@ console** until these are set, so the form works immediately.
 | Var | Purpose |
 |---|---|
 | `RESEND_API_KEY`, `LEAD_FALLBACK_EMAIL`, `LEAD_FROM_EMAIL` | Email fallback (the guaranteed lead capture) via [Resend](https://resend.com). Verify a sending domain. |
-| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REDIRECT_URI`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION`, `JOBBER_LEAD_CUSTOM_FIELD_ID` | Jobber GraphQL integration (best-effort CRM sync — creates a Client per lead). See setup below. |
+| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REDIRECT_URI`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION`, `JOBBER_LEAD_CUSTOM_FIELD_IDS` | Jobber GraphQL integration (best-effort CRM sync — creates a Client per lead). See setup below. |
 
 ### How the lead pipeline behaves
 
@@ -106,10 +106,11 @@ not the system of record.
    node scripts/jobber-auth.mjs <code>  # prints JOBBER_REFRESH_TOKEN
    ```
    Paste the printed token into `JOBBER_REFRESH_TOKEN`.
-3. **(Optional) request details on the client** — in Jobber, create a **text custom field** on
-   Clients (e.g. "Website request"), then set `JOBBER_LEAD_CUSTOM_FIELD_ID` to its
-   `customFieldConfigurationId` (find it in GraphiQL via `customFieldConfigurations`). Without
-   it, the client is created without those details.
+3. **(Optional) request details on the client** — run `node scripts/jobber-custom-field.mjs`
+   and paste the JSON map it prints into `JOBBER_LEAD_CUSTOM_FIELD_IDS`. It creates one Text
+   custom field per datum (Jobber has no multi-line type, so a packed value runs together in
+   the UI). The fields must be app-created — Jobber hides ones made by hand in Settings from
+   the API. Without the map, the client is created without those details.
 4. **[VERIFY-LIVE]** in Jobber's GraphiQL before launch: the current `X-JOBBER-GRAPHQL-VERSION`
    date and the exact `ClientCreateInput` field names (`emails`/`phones`/`billingAddress`/
    `customFields`). These are isolated in `src/lib/jobber/mutations.ts` and `oauth.ts`.

@@ -1,21 +1,23 @@
 #!/usr/bin/env node
-// One-time bootstrap for the Client custom field that carries a lead's request
-// details (services, timing, message) into Jobber. Prints the configuration ID
-// for JOBBER_LEAD_CUSTOM_FIELD_ID.
+// Creates the Client custom fields that carry a website lead's request details
+// into Jobber, and prints JOBBER_LEAD_CUSTOM_FIELD_IDS.
 //
-// WHY A SCRIPT AND NOT A FIELD JESSE MAKES IN THE UI: Jobber only lets an app
-// read or write custom fields that the APP ITSELF created. A field created by
-// hand in Settings → Custom Fields is invisible to the API — every query for it
-// returns "hidden due to permissions" — so its ID can never be used here.
+// WHY ONE FIELD PER DATUM: Jobber has no multi-line text custom field. The six
+// types are Text, Area, Link, Numeric, TrueFalse and Dropdown — and "Area" is a
+// physical measurement (length × width + unit), not a text area. Newlines inside
+// a single Text value are stored but collapse when Jobber renders them, so a
+// packed summary runs together on one line. Separate fields render as separate
+// labeled rows, which is the only way to get real visual separation.
 //
-// Requires the app's Custom Field Configurations scope with WRITE, granted at
-// authorization time. If the scope was marked "Optional" in the Developer Center
-// it may not have been granted; see docs/JOBBER_INTEGRATION.md Part C.
+// WHY A SCRIPT AND NOT FIELDS MADE BY HAND: Jobber only lets an app read or write
+// custom fields the APP ITSELF created. A field added in Settings → Custom Fields
+// is invisible to the API — every query returns "hidden due to permissions" — so
+// its ID can never be used here.
 //
 //   node scripts/jobber-custom-field.mjs
 //
-// Safe to re-run: if the app already owns the field, it prints the existing ID
-// instead of creating a duplicate. Reads process.env first, then .env.
+// Idempotent: existing fields are reused, missing ones created, and app-owned
+// fields that are no longer part of the set are archived. Reads process.env, then .env.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -24,7 +26,17 @@ import { dirname, join } from "node:path";
 const TOKEN_URL = "https://api.getjobber.com/api/oauth/token";
 const GRAPHQL_URL = "https://api.getjobber.com/api/graphql";
 const DEFAULT_VERSION = "2025-04-16";
-const FIELD_NAME = "Website request";
+
+// key → the label Jesse sees on the client record. Keys are the contract with
+// src/lib/jobber/mutations.ts; renaming one here without renaming it there drops
+// that datum silently. Labels avoid colliding with Jobber's own built-in fields
+// ("Service address", not "Address", which would sit beside the billing address).
+const FIELDS = [
+  { key: "services", label: "Services requested" },
+  { key: "address", label: "Service address" },
+  { key: "message", label: "Message" },
+  { key: "submitted", label: "Submitted" },
+];
 
 function loadEnv() {
   const merged = { ...process.env };
@@ -79,7 +91,7 @@ async function gql(query, variables = {}) {
   return res.json();
 }
 
-// Scope-denial arrives as a top-level GraphQL error, not a userError.
+// Scope denial arrives as a top-level GraphQL error, not a userError.
 function isPermissionError(body) {
   return (body.errors ?? []).some((e) => /hidden due to permissions/i.test(e.message ?? ""));
 }
@@ -92,17 +104,15 @@ The app lacks WRITE on Custom Field Configurations.
      tick Read + Write, and UNTICK "Optional" so the grant is mandatory.
   2. Re-authorize (scope changes force fresh consent — Jesse must approve):
        node scripts/jobber-auth.mjs
-     Put the new JOBBER_REFRESH_TOKEN in .env and Vercel.
   3. Re-run this script.`);
 }
 
-// Idempotency: the filter only ever returns fields this app created, which is
-// also the only set it is allowed to write to.
+// Only ever returns fields this app created, which is also the only set it may write.
 const existing = await gql(`
   {
     customFieldConfigurations(filter: { createdByThisApp: true }) {
       nodes {
-        ... on CustomFieldConfigurationText { id name appliesTo }
+        ... on CustomFieldConfigurationText { id name }
       }
     }
   }
@@ -112,61 +122,70 @@ if (isPermissionError(existing)) {
   process.exit(1);
 }
 
-const match = (existing.data?.customFieldConfigurations?.nodes ?? []).find(
-  (n) => n?.name === FIELD_NAME,
-);
-if (match) {
-  console.log(`\n✅ The app already owns "${FIELD_NAME}". Nothing created.\n`);
-  console.log("JOBBER_LEAD_CUSTOM_FIELD_ID=" + match.id + "\n");
-  process.exit(0);
-}
+const owned = (existing.data?.customFieldConfigurations?.nodes ?? []).filter(Boolean);
+const byLabel = new Map(owned.map((n) => [n.name, n.id]));
 
-// readOnly: the value is written by the website, so Jesse shouldn't hand-edit it.
-// transferable: false keeps it off quotes/jobs copied from the client.
-const created = await gql(
-  `
-  mutation CreateLeadField($input: CustomFieldConfigurationCreateTextInput!) {
-    customFieldConfigurationCreateText(input: $input) {
-      customFieldConfiguration {
-        ... on CustomFieldConfigurationText { id name }
-      }
-      userErrors { message path }
-    }
+const ids = {};
+for (const { key, label } of FIELDS) {
+  if (byLabel.has(label)) {
+    ids[key] = byLabel.get(label);
+    console.log(`  = ${label} (exists)`);
+    continue;
   }
-`,
-  {
-    input: {
-      appliesTo: "ALL_CLIENTS",
-      name: FIELD_NAME,
-      transferable: false,
-      readOnly: true,
-    },
-  },
-);
-
-if (isPermissionError(created)) {
-  scopeHelp();
-  process.exit(1);
-}
-if (created.errors) {
-  console.error("GraphQL error:", JSON.stringify(created.errors, null, 2));
-  process.exit(1);
-}
-
-const payload = created.data?.customFieldConfigurationCreateText;
-const userErrors = payload?.userErrors ?? [];
-if (userErrors.length) {
-  console.error("Jobber rejected the field:", userErrors.map((e) => e.message).join("; "));
-  process.exit(1);
-}
-
-const id = payload?.customFieldConfiguration?.id;
-if (!id) {
-  console.error("No configuration ID in response:", JSON.stringify(created, null, 2));
-  process.exit(1);
+  // readOnly: the website owns the value, so hand-edits would be overwritten.
+  // transferable: false keeps it off quotes/jobs copied from the client.
+  const created = await gql(
+    `mutation Create($input: CustomFieldConfigurationCreateTextInput!) {
+      customFieldConfigurationCreateText(input: $input) {
+        customFieldConfiguration { ... on CustomFieldConfigurationText { id } }
+        userErrors { message path }
+      }
+    }`,
+    { input: { appliesTo: "ALL_CLIENTS", name: label, transferable: false, readOnly: true } },
+  );
+  if (isPermissionError(created)) {
+    scopeHelp();
+    process.exit(1);
+  }
+  const errs = created.data?.customFieldConfigurationCreateText?.userErrors ?? [];
+  if (created.errors || errs.length) {
+    console.error(
+      `Failed to create "${label}":`,
+      JSON.stringify(created.errors ?? errs, null, 2),
+    );
+    process.exit(1);
+  }
+  ids[key] = created.data.customFieldConfigurationCreateText.customFieldConfiguration.id;
+  console.log(`  + ${label} (created)`);
 }
 
-console.log(`\n✅ Created "${FIELD_NAME}" on Clients. Put this in .env and Vercel:\n`);
-console.log("JOBBER_LEAD_CUSTOM_FIELD_ID=" + id + "\n");
-console.log("Jobber shows the app's name and logo beside the value — that is expected for");
+// Retire app-owned fields no longer in the set (e.g. the single packed "Website
+// request" field this replaced). Jobber REFUSES to archive any field associated
+// with an app — including the app's own — so a field this script creates can
+// never be removed through the API. Renaming is the only lever available, so a
+// retired field is relabelled to read as dead rather than sitting beside the live
+// ones looking current. Deleting it for real is a manual step in Jobber's UI.
+const RETIRED = " (retired)";
+const wanted = new Set(FIELDS.map((f) => f.label));
+for (const node of owned) {
+  if (wanted.has(node.name) || node.name.endsWith(RETIRED)) continue;
+  const renamed = await gql(
+    `mutation Retire($id: EncodedId!, $input: CustomFieldConfigurationEditInput!) {
+      customFieldConfigurationEdit(customFieldConfigurationId: $id, input: $input) {
+        userErrors { message path }
+      }
+    }`,
+    { id: node.id, input: { name: node.name + RETIRED } },
+  );
+  const errs = renamed.data?.customFieldConfigurationEdit?.userErrors ?? [];
+  if (renamed.errors || errs.length) {
+    console.error(`  ! could not retire "${node.name}":`, JSON.stringify(renamed.errors ?? errs));
+  } else {
+    console.log(`  ~ ${node.name} → "${node.name}${RETIRED}" (unused; delete by hand in Jobber)`);
+  }
+}
+
+console.log("\n✅ Fields ready. Put this in .env and Vercel:\n");
+console.log("JOBBER_LEAD_CUSTOM_FIELD_IDS=" + JSON.stringify(ids) + "\n");
+console.log("Jobber shows the app's name and logo beside each value — that is expected for");
 console.log("app-configured fields and cannot be turned off.");
