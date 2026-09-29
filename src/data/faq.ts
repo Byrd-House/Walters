@@ -10,9 +10,36 @@ export type FaqItem = {
   q: string;
   /** Paragraphs of the answer, in order. */
   a: string[];
-  /** Optional starting-price rows, rendered as a definition list. */
-  prices?: { service: string; price: string }[];
+  /** Optional starting-price rows, rendered as a list. */
+  prices?: StartingPrice[];
 };
+
+export type StartingPrice = {
+  service: string;
+  /** Display string, exactly as it appears on the page. */
+  price: string;
+  /** Numeric floor for schema.org priceSpecification. */
+  from: number;
+  /** Service group this is the floor for, where the mapping is unambiguous.
+   *  Left off when a price doesn't map cleanly to one group — a wrong price in
+   *  structured data is worse than no price. */
+  slug?: string;
+};
+
+// Single source for every published price. The FAQ renders these rows and
+// /services emits the slugged ones as schema.org offers; both read this array so a
+// price can never be right in one place and stale in the other.
+export const startingPrices: StartingPrice[] = [
+  { service: "Yard maintenance", price: "from $60", from: 60, slug: "property-maintenance" },
+  { service: "Weekly and biweekly leaf cleanup", price: "from $60", from: 60 },
+  { service: "Pruning and trimming", price: "from $100", from: 100 },
+  { service: "Aeration", price: "from $125", from: 125 },
+  { service: "Overseeding", price: "from $125", from: 125 },
+  { service: "Top dressing", price: "from $200", from: 200 },
+  { service: "Leaf removal", price: "from $300", from: 300 },
+  { service: "Mulch", price: "from $450", from: 450, slug: "mulch-pinestraw" },
+  { service: "Lot clearing", price: "from $1,700 for a seven-hour day", from: 1700 },
+];
 
 export type FaqGroup = {
   id: string;
@@ -45,17 +72,7 @@ export const faqGroups: FaqGroup[] = [
         a: [
           "There's a starting price rather than a flat minimum, and it depends on the service:",
         ],
-        prices: [
-          { service: "Yard maintenance", price: "from $60" },
-          { service: "Weekly and biweekly leaf cleanup", price: "from $60" },
-          { service: "Pruning and trimming", price: "from $100" },
-          { service: "Aeration", price: "from $125" },
-          { service: "Overseeding", price: "from $125" },
-          { service: "Top dressing", price: "from $200" },
-          { service: "Leaf removal", price: "from $300" },
-          { service: "Mulch", price: "from $450" },
-          { service: "Lot clearing", price: "from $1,700 for a seven-hour day" },
-        ],
+        prices: startingPrices,
       },
       {
         q: "Do you charge by the hour?",
@@ -152,7 +169,7 @@ export const faqGroups: FaqGroup[] = [
         q: "Which towns do you serve?",
         a: [
           "Chapel Hill, Durham, Hillsborough, Carrboro, Pittsboro, Mebane, Cedar Grove, Hurdle Mills, and Eli Whitney.",
-          "That range covers maintenance. For larger projects we'll travel further — ask and we'll tell you straight whether it's workable.",
+          "That range covers maintenance. For larger projects we'll travel further — ask and we'll tell you straight whether it's workable. More detail is on our service area page.",
         ],
       },
       {

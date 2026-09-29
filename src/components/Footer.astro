@@ -29,7 +29,7 @@ const wordmark = site.name.replace(/['']/g, "");
     <div>
       <h2 class="font-sans text-small font-bold text-white">Service area</h2>
       <p class="mt-3 max-w-xs font-sans text-small text-green-100">
-        {areas}
+        <a href="/service-area" class="hover:text-white">{areas}</a>
       </p>
       {/* TODO[CONFIRM]: business hours — omitted until confirmed */}
       {site.hours && <p class="mt-2 font-sans text-small text-green-200">{site.hours}</p>}
@@ -39,6 +39,8 @@ const wordmark = site.name.replace(/['']/g, "");
       <h2 class="font-sans text-small font-bold text-white">Explore</h2>
       <ul class="mt-3 space-y-1 font-sans text-small text-green-100">
         {nav.map((item) => <li><a href={item.href} class="inline-block py-1.5 hover:text-white">{item.label}</a></li>)}
+        {/* Footer-only: high-intent for local search, but the header stays at four. */}
+        <li><a href="/service-area" class="inline-block py-1.5 hover:text-white">Service Area</a></li>
       </ul>
       {/* TODO[CONFIRM]: social profile URLs (handle "JW Landscape and Maintenance") */}
       {

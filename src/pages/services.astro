@@ -4,6 +4,7 @@ import QuoteSection from "../components/QuoteSection.astro";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import { serviceGroups, site } from "../data/site";
+import { startingPrices } from "../data/faq";
 import maintenance from "../assets/photos/IMG_8004-crop.JPG";
 import mulch from "../assets/photos/IMG_7808.JPG";
 import grading from "../assets/photos/IMG_8285.JPG";
@@ -25,6 +26,14 @@ const provider = {
 };
 const areaServed = site.areasServed.map((a) => ({ "@type": "City", name: a }));
 
+// Published starting prices, keyed by service group. Only the unambiguous ones
+// carry a slug — see src/data/faq.ts. A service with no mapped floor emits no
+// offer, which is correct: a missing price costs nothing, a wrong one is quoted
+// back at Jesse by an answer engine.
+const floorBySlug = Object.fromEntries(
+  startingPrices.filter((p) => p.slug).map((p) => [p.slug!, p.from]),
+);
+
 const serviceSchema = serviceGroups.map((s) => ({
   "@context": "https://schema.org",
   "@type": "Service",
@@ -34,6 +43,18 @@ const serviceSchema = serviceGroups.map((s) => ({
   url: new URL(`/services#${s.slug}`, base).href,
   provider,
   areaServed,
+  ...(floorBySlug[s.slug]
+    ? {
+        offers: {
+          "@type": "Offer",
+          priceSpecification: {
+            "@type": "PriceSpecification",
+            priceCurrency: "USD",
+            minPrice: floorBySlug[s.slug],
+          },
+        },
+      }
+    : {}),
   ...(s.items?.length
     ? {
         hasOfferCatalog: {
