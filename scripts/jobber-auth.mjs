@@ -10,7 +10,7 @@
 //
 // Reads process.env first, then falls back to values in .env at the repo root.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -85,8 +85,35 @@ if (!data.refresh_token) {
   process.exit(1);
 }
 
-console.log("\n✅ Success. Put this in your .env and Vercel project env:\n");
-console.log("JOBBER_REFRESH_TOKEN=" + data.refresh_token + "\n");
+// Write the token straight into .env rather than relying on it being copied out
+// of the terminal. The authorization code is single-use and re-authorizing REVOKES
+// the previous refresh token, so a token lost between here and .env costs another
+// round-trip to the account owner.
+const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
+let wrote = false;
+try {
+  const raw = readFileSync(envPath, "utf8");
+  if (/^\s*JOBBER_REFRESH_TOKEN\s*=.*$/m.test(raw)) {
+    writeFileSync(
+      envPath,
+      raw.replace(/^\s*JOBBER_REFRESH_TOKEN\s*=.*$/m, `JOBBER_REFRESH_TOKEN=${data.refresh_token}`),
+    );
+    wrote = true;
+  }
+} catch {
+  /* no .env — fall back to printing */
+}
+
+const masked = data.refresh_token.slice(0, 6) + "…" + data.refresh_token.slice(-4);
+if (wrote) {
+  console.log(`\n✅ Success. JOBBER_REFRESH_TOKEN written to .env (${masked}).`);
+  console.log("   Mirror the same value into Vercel → Settings → Environment Variables:\n");
+  console.log("   npx vercel env rm JOBBER_REFRESH_TOKEN production");
+  console.log("   npx vercel env add JOBBER_REFRESH_TOKEN production\n");
+} else {
+  console.log("\n✅ Success. Put this in your .env and Vercel project env:\n");
+  console.log("JOBBER_REFRESH_TOKEN=" + data.refresh_token + "\n");
+}
 if (data.access_token) {
   console.log(
     `Short-lived access token (valid ~${Math.round((data.expires_in ?? 3600) / 60)} min — for`,

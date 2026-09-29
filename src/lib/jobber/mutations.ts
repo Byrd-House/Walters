@@ -52,9 +52,11 @@ export function toClientCreateInput(lead: Lead) {
     input.billingAddress = { street1: lead.address };
   }
   // Attach the request details as a Client custom text field — but only when the
-  // account's custom-field config ID is set. Create a TEXT custom field on Clients
-  // in Jobber ("Website request"), then set JOBBER_LEAD_CUSTOM_FIELD_ID to its
-  // configuration ID. Without it, the client is created without these details.
+  // account's custom-field config ID is set. Run `node scripts/jobber-custom-field.mjs`
+  // to create the field and print its configuration ID for JOBBER_LEAD_CUSTOM_FIELD_ID.
+  // The field must be app-created: Jobber hides custom fields the app didn't create,
+  // so one made by hand in Settings can never be written here. Without the ID, the
+  // client is created without these details (the lead email still has them).
   const cfId = env("JOBBER_LEAD_CUSTOM_FIELD_ID");
   if (cfId) {
     input.customFields = [{ customFieldConfigurationId: cfId, valueText: requestSummary(lead) }];

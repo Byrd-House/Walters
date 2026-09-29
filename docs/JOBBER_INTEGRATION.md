@@ -11,7 +11,8 @@ lead regardless, so nothing here is load-bearing for lead capture — Jobber is 
 convenience sync.
 
 Roles below are tagged **[Dev]** (Byrd House) and **[Jesse]** (account owner). Jesse's
-total involvement is ~5 minutes: one authorize click + creating one custom field.
+total involvement is ~2 minutes: one authorize click. The custom field is created by
+the app, not by hand — see Part C.
 
 ---
 
@@ -47,6 +48,17 @@ JOBBER_REDIRECT_URI=http://localhost:5173/callback
 The refresh token grants access to Jesse's data, so **Jesse must approve it once** (only
 an Owner/Admin can). Byrd House never needs to log into his account.
 
+> **Re-authorizing revokes the previous refresh token immediately.** The moment Jesse
+> approves again, the token in production stops working — Jobber sync is down until the
+> new one is deployed. Leads are unaffected (the email sink is independent), but do the
+> re-auth and the redeploy together, not hours apart.
+
+> **Ignore the `scopes` claim on the authorization code.** The code is a JWT, and on a
+> *re-authorization* its `scopes` claim comes back empty even when the grant is fully
+> intact — it is not the granted scope set. The authoritative value is the `scope` claim
+> on the **access token** you get back from the exchange. Do not treat an empty `scopes`
+> on the code as a misconfiguration; exchange it and check the access token.
+
 1. **[Dev]** Print the authorize URL:
    ```bash
    node scripts/jobber-auth.mjs
@@ -77,28 +89,43 @@ JOBBER_API_VERSION=2025-04-16   # confirmed valid in Jobber's current docs; chec
 
 ---
 
-## Part C — Create the custom field & get its ID · [Jesse] + [Dev] (~3 min)
+## Part C — Create the custom field & get its ID · [Dev] (~3 min)
 
-1. **[Jesse]** In Jobber: **Gear → Settings → Custom Fields → Add**. Create a **Text**
-   field attached to **Clients**, named e.g. **"Website request"**. Save.
-2. **[Dev]** Fetch its configuration ID with the access token:
+> **The field must be created by the app, not by hand.** Jobber only lets an app read
+> or write custom fields that the **app itself** created. A field Jesse adds in
+> Settings → Custom Fields is invisible to the API — every query for it returns
+> `"hidden due to permissions"` — so its ID can never be used here. There is no way
+> around this; it is an object-level restriction, not a scope you can widen.
+
+1. **[Dev]** Confirm the app's **Custom Field Configurations** scope has **Read +
+   Write**, and that **"Optional" is UNTICKED**. An optional scope can be skipped at
+   consent time, which grants Read but silently withholds Write.
+2. **[Jesse]** If the scope changed, re-authorize (Part B again) — scope changes force
+   fresh consent. Put the new `JOBBER_REFRESH_TOKEN` in `.env` and Vercel.
+3. **[Dev]** Create the field and print its configuration ID:
    ```bash
-   curl -s https://api.getjobber.com/api/graphql \
-     -H "Authorization: Bearer $JOBBER_TOKEN" \
-     -H "X-JOBBER-GRAPHQL-VERSION: 2025-04-16" \
-     -H "Content-Type: application/json" \
-     -d '{"query":"{ customFieldConfigurations { nodes { id name } } }"}'
+   node scripts/jobber-custom-field.mjs
    ```
-   Find the node whose `name` is "Website request" and copy its `id`.
+   Safe to re-run — if the app already owns the field it prints the existing ID rather
+   than creating a duplicate. If Write is missing it says so and tells you what to fix.
 
-Add to `.env`:
+Add the printed value to `.env` **and** Vercel → Settings → Environment Variables:
 
 ```bash
 JOBBER_LEAD_CUSTOM_FIELD_ID=<the id from above>
 ```
 
+Jobber displays the app's name and logo beside the value wherever Jesse sees it. That
+is expected for app-configured fields and cannot be turned off.
+
 > If you skip this, clients are still created — just without the details field (details
 > always remain in the lead email).
+
+> **Debugging note.** `CustomFieldConfiguration` is a GraphQL **union**, so a bare
+> `{ customFieldConfigurations { nodes { id name } } }` fails with
+> `"Selections can't be made directly on unions"`. Use inline fragments, and filter by
+> `createdByThisApp: true` — without that filter the account's other custom fields
+> raise a permission error that nulls the whole response.
 
 ---
 
