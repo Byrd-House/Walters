@@ -53,14 +53,15 @@ export const site = {
     // pixel is live. Not a secret — it ships in the page source by design.
     metaPixel: "1833699738043221" as string | null, // sets cookies; shares visit data with Meta
   },
-  // Public profiles found 2026-09-18; phone on the listings matches site.phone.
-  // These feed schema.org sameAs, which is how search/answer engines tie the
-  // site, the Google Business Profile, and the social accounts to one entity.
-  // TODO[CONFIRM]: verify both are the owner's current, active profiles.
+  // Confirmed by the owner 2026-09-29. These replaced two profiles found by
+  // search on 2026-09-18 that turned out to be the wrong accounts — a different
+  // Facebook page ID and a different Instagram handle. Feeds schema.org sameAs,
+  // which is how search/answer engines tie the site, the Google Business
+  // Profile, and the social accounts to one entity; a wrong URL here points that
+  // link at someone else's account, so only ever set these from the owner.
   social: {
-    facebook:
-      "https://www.facebook.com/p/Jesse-Walters-Landscape-and-Maintenance-61576343244940/" as string | null,
-    instagram: "https://www.instagram.com/jwlandscapeandmaintenance/" as string | null,
+    facebook: "https://www.facebook.com/profile.php?id=61594689551359" as string | null,
+    instagram: "https://www.instagram.com/jessewalterslandscaping/" as string | null,
   },
 };
 
