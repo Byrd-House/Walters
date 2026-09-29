@@ -12,6 +12,8 @@ export type FaqItem = {
   a: string[];
   /** Optional starting-price rows, rendered as a list. */
   prices?: StartingPrice[];
+  /** Paragraphs rendered after the price rows. */
+  after?: string[];
 };
 
 export type StartingPrice = {
@@ -55,16 +57,15 @@ export const faqGroups: FaqGroup[] = [
       {
         q: "What does a typical mulch job cost?",
         a: [
-          "Mulch jobs start at $450, which covers a three-yard minimum. From there the price moves with the amount of ground you're covering, how deep you want it laid, and which material you choose — standard shredded costs less than dyed.",
-          "Access and terrain matter as much as square footage. Tight gates, obstacles, and slope all add time. So does bed preparation: hand edging, clearing leaves and debris, and pulling out old mulch where it has built up over the years.",
-          "We'll walk the property and give you a firm number before any work starts.",
+          "Mulch jobs start at $450, which covers a three-yard minimum. From there the price depends on the amount of space to cover, the depth you want, and the type of mulch: standard shredded or dyed.",
+          "Yard access and obstacles and the topography of the property also factor in, as does bed preparation: hand edging, debris and leaf removal, and removing excess previous mulch.",
         ],
       },
       {
         q: "What does weekly or biweekly mowing run?",
         a: [
           "Weekly mowing starts at $60. A standard Chapel Hill yard runs around $70 a visit.",
-          "Lot size is the main variable, so we confirm the rate once we've seen the property.",
+          "Lot size does affect pricing.",
         ],
       },
       {
@@ -73,11 +74,14 @@ export const faqGroups: FaqGroup[] = [
           "There's a starting price rather than a flat minimum, and it depends on the service:",
         ],
         prices: startingPrices,
+        after: [
+          "Larger jobs like driveways, drainage, grading, construction, retaining walls, concrete work, and new construction are all priced per job.",
+        ],
       },
       {
         q: "Do you charge by the hour?",
         a: [
-          "No. Everything is priced by the job, so you have the number before work begins rather than watching a clock.",
+          "No. Everything is priced by the job.",
         ],
       },
       {
@@ -101,15 +105,15 @@ export const faqGroups: FaqGroup[] = [
       {
         q: "How soon can you start?",
         a: [
-          "In spring and fall — the busiest stretch of the year — the wait is two to three weeks at most. In winter it's usually about a week.",
-          "We do take same-day emergency calls: storm cleanup, fallen trees, and drainage problems that can't wait for a scheduled visit.",
+          "In spring and fall the wait is two to three weeks at most. In winter it's about a week.",
+          "We do take same-day emergency calls: storm cleanup, drainage, fallen trees.",
         ],
       },
       {
         q: "When is the right time of year to mulch in the Triangle?",
         a: [
-          "January through June is the ideal window. The leaves have finished falling by then, so fresh mulch stays visible and clean instead of disappearing under debris a few weeks later.",
-          "If you're on a maintenance plan with us, the beds get cleared as part of the routine — which makes mulch worth laying any month of the year.",
+          "January through June is the ideal window, because the leaves have finished falling by then.",
+          "If you're on a maintenance plan with us, the beds get cleared as part of the routine, which makes mulch worth laying any month of the year.",
         ],
       },
       {
@@ -141,7 +145,7 @@ export const faqGroups: FaqGroup[] = [
         // not add a dollar amount here later without asking him again.
         q: "Are you insured?",
         a: [
-          "Yes — fully insured for both residential and commercial work, and the crew is covered by workers' compensation.",
+          "Yes. Fully insured for both residential and commercial work, and the crew is covered by workers' compensation.",
         ],
       },
       {
@@ -152,9 +156,9 @@ export const faqGroups: FaqGroup[] = [
         ],
       },
       {
-        q: "Who actually shows up — you, or a crew?",
+        q: "Who actually shows up, you or a crew?",
         a: [
-          "Maintenance customers see a consistent crew, and there's always a foreman on site. Jesse isn't typically on maintenance visits.",
+          "Maintenance customers see a consistent crew, and every crew has a foreman on site. Jesse isn't on maintenance visits.",
           "On larger projects, Jesse is on site.",
         ],
       },
@@ -172,7 +176,7 @@ export const faqGroups: FaqGroup[] = [
         q: "Which towns do you serve?",
         a: [
           "Chapel Hill, Durham, Hillsborough, Carrboro, Pittsboro, Mebane, Cedar Grove, Hurdle Mills, and Eli Whitney.",
-          "That range covers maintenance. For larger projects we'll travel further — ask and we'll tell you straight whether it's workable. More detail is on our service area page.",
+          "That range covers maintenance. For larger projects we'll travel further. Ask and we'll tell you straight whether it's workable. More detail is on our service area page.",
         ],
       },
       {
@@ -184,7 +188,7 @@ export const faqGroups: FaqGroup[] = [
       {
         q: "What do you not do?",
         a: [
-          "We don't take on irrigation, and we don't do chemical or pest control treatments. For those you'll want a licensed applicator.",
+          "No chemical or pest control treatments, and no irrigation.",
         ],
       },
     ],
@@ -196,7 +200,7 @@ export const faqGroups: FaqGroup[] = [
       {
         q: "Do you haul away the debris and old material?",
         a: [
-          "Yes, and it's included. Old mulch, branches, and demolition material are covered by the quote you received — not added afterward.",
+          "Yes, and it's included. Old mulch, branches, and demolition material are covered by the quote you received, not added afterward.",
         ],
       },
       {
@@ -218,7 +222,8 @@ export const faqGroups: FaqGroup[] = [
 // Flatten an answer to the plain text FAQPage schema expects. Prices become a
 // readable clause rather than markup, since the schema field takes text.
 export function answerText(item: FaqItem): string {
-  const prose = item.a.join(" ");
-  if (!item.prices?.length) return prose;
-  return `${prose} ${item.prices.map((p) => `${p.service} ${p.price}`).join(". ")}.`;
+  const parts = [item.a.join(" ")];
+  if (item.prices?.length) parts.push(`${item.prices.map((p) => `${p.service} ${p.price}`).join(". ")}.`);
+  if (item.after?.length) parts.push(item.after.join(" "));
+  return parts.join(" ");
 }

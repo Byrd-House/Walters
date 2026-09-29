@@ -125,7 +125,7 @@ export const serviceGroups: ServiceGroup[] = [
       "Regrading, swales, and drainage work that moves water away from your home and keeps the yard from washing out.",
     intro:
       "Regrading, swales, and drainage work that moves water away from your home and keeps the yard " +
-      "from washing out — protecting your investment.",
+      "from washing out, protecting your investment.",
     items: ["Regrading", "Drainage & swales", "French drains", "Erosion control"],
     homeCard: true,
   },
