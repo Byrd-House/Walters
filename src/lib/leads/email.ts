@@ -21,7 +21,6 @@ function renderHtml(lead: Lead): string {
       ${row("Email", escapeHtml(lead.email))}
       ${row("Services", escapeHtml(services))}
       ${row("Address", escapeHtml(lead.address ?? "(none)"))}
-      ${row("Timing", escapeHtml(lead.timing ?? "(none)"))}
     </table>
     <p style="margin-top:16px;color:#5e7e6f;font-size:14px">Message</p>
     <p style="white-space:pre-wrap;color:#1d3028;font-size:14px">${escapeHtml(lead.message ?? "(none)")}</p>

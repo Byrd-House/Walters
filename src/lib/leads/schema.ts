@@ -10,7 +10,6 @@ const schema = z.object({
   phone: z.string().trim().min(7, "Please enter a phone number").max(40),
   email: z.email("Please enter a valid email").max(200),
   address: z.string().trim().max(200).optional(),
-  timing: z.enum(["", "asap", "few-weeks", "planning"]).optional(),
   message: z.string().trim().max(2000).optional(),
   services: z.array(z.string()).default([]),
 });
@@ -35,7 +34,6 @@ export async function parseLead(request: Request): Promise<ParseResult> {
     phone: String(form.get("phone") ?? ""),
     email: String(form.get("email") ?? ""),
     address: String(form.get("address") ?? ""),
-    timing: String(form.get("timing") ?? ""),
     message: String(form.get("message") ?? ""),
     services: form
       .getAll("services")
@@ -63,7 +61,6 @@ export async function parseLead(request: Request): Promise<ParseResult> {
     phone: d.phone,
     address: d.address || undefined,
     services: d.services,
-    timing: d.timing || undefined,
     message: d.message || undefined,
     source: "website-quote-form",
     submittedAt: new Date().toISOString(),
