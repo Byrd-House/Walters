@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteSection from "../components/QuoteSection.astro";
+import { faqGroups, answerText } from "../data/faq";
+import { site } from "../data/site";
+
+// FAQPage schema, built from the same data the page renders. This is the point of
+// the page for search and answer engines: a question they can quote verbatim with
+// an answer attached, rather than prose they have to infer one from.
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqGroups.flatMap((g) =>
+    g.items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: answerText(item) },
+    })),
+  ),
+};
+---
+
+<BaseLayout
+  title={`Frequently Asked Questions · ${site.legalName}`}
+  description="What landscaping costs in Chapel Hill, how soon we can start, when to mulch in the Triangle, and how we handle payment, weather, and warranties."
+  schema={faqSchema}
+>
+  <section class="mx-auto max-w-7xl px-4 pb-6 pt-16 lg:px-6 lg:pb-10 lg:pt-24">
+    <div class="max-w-3xl">
+      <h1 class="font-heading text-h2 font-bold text-green-900">Questions we get asked</h1>
+      <p class="mt-4 max-w-2xl font-sans text-body text-green-800 sm:text-lg/relaxed">
+        Prices, timing, and how we work — answered plainly. If yours isn't here, call or send the
+        form and we'll tell you straight.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 pb-16 lg:px-6 lg:pb-24">
+    {
+      faqGroups.map((group) => (
+        <section id={group.id} class="scroll-mt-24 border-t border-line py-12 lg:py-16">
+          <div class="grid gap-8 lg:grid-cols-[16rem_1fr] lg:gap-16">
+            <h2 class="font-heading text-h3 font-bold text-green-900">{group.title}</h2>
+            <dl class="max-w-2xl">
+              {group.items.map((item, i) => (
+                <div class:list={[i > 0 && "mt-10 border-t border-line pt-10"]}>
+                  <dt class="font-heading text-lg font-bold text-green-900">{item.q}</dt>
+                  <dd class="mt-3">
+                    {item.a.map((p) => (
+                      <p class="mt-3 font-sans text-body text-green-800 first:mt-0">{p}</p>
+                    ))}
+                    {item.prices && (
+                      <ul class="mt-5 divide-y divide-line border-y border-line">
+                        {item.prices.map((row) => (
+                          <li class="flex items-baseline justify-between gap-6 py-2.5">
+                            <span class="font-sans text-body text-green-800">{row.service}</span>
+                            <span class="font-sans text-body font-bold text-green-900">
+                              {row.price}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      ))
+    }
+  </div>
+
+  <QuoteSection />
+</BaseLayout>
