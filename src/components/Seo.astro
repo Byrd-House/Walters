@@ -25,9 +25,11 @@ const ogImage = new URL(image, Astro.site).href;
 
 const tabTitle = title;
 
-// schema.org LocalBusiness (brief §8). `alternateName` + `sameAs` are the entity
-// signals: they tell search and answer engines that this site, the Google
-// Business Profile, and the social accounts are one business rather than three.
+// schema.org LocalBusiness (brief §8). `sameAs` carries the entity signal: it
+// tells search and answer engines that this site and the social accounts are one
+// business rather than three. There is no `alternateName` — the owner renamed the
+// Google Business Profile to match `legalName` on 2026-09-29, so declaring an
+// alias would assert a second name the business no longer uses.
 // openingHoursSpecification comes from site.hours, confirmed by the owner.
 const sameAs = [site.social.facebook, site.social.instagram].filter(Boolean) as string[];
 
@@ -72,7 +74,6 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LandscapingBusiness",
   name: site.legalName,
-  alternateName: site.gbpName,
   description,
   telephone: site.phone,
   ...(site.email ? { email: site.email } : {}),

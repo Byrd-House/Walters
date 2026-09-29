@@ -7,10 +7,6 @@ export const site = {
   // the "LANDSCAPING" rule, so the two read as one name.
   name: "Jesse Walters",
   legalName: "Jesse Walters Landscaping",
-  // Google Business Profile name. Differs from legalName above — kept so
-  // structured data can declare both and answer engines resolve them as one
-  // business. TODO[CONFIRM]: exact GBP spelling before the profile is linked.
-  gbpName: "Jesse Walters Landscape & Maintenance",
   tagline: "Landscaping",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
