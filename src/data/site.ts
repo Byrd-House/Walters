@@ -19,7 +19,24 @@ export const site = {
   // emitted in JSON-LD. Omission is correct here — inventing hours would be
   // worse than having none.
   hours: null as string | null,
+  // Towns named in the hero. Deliberately the three the business is best known
+  // for — the hero line has to stay readable. The full list is areasServed.
   areas: ["Chapel Hill", "Durham", "Hillsborough"],
+  // Every town served, confirmed by Jesse 2026-09-29. Drives areaServed in the
+  // LocalBusiness and Service JSON-LD, and is rendered in the footer and on
+  // /contact: schema naming a town that appears nowhere in the page text is a
+  // weak signal, so these are stated on the page as well as declared.
+  areasServed: [
+    "Chapel Hill",
+    "Durham",
+    "Hillsborough",
+    "Carrboro",
+    "Pittsboro",
+    "Mebane",
+    "Cedar Grove",
+    "Hurdle Mills",
+    "Eli Whitney",
+  ],
   zip: "27516",
   region: "NC",
   rating: { value: 5.0, count: 26 },

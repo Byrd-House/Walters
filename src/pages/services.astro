@@ -23,7 +23,7 @@ const provider = {
   telephone: site.phone,
   url: base,
 };
-const areaServed = site.areas.map((a) => ({ "@type": "City", name: a }));
+const areaServed = site.areasServed.map((a) => ({ "@type": "City", name: a }));
 
 const serviceSchema = serviceGroups.map((s) => ({
   "@context": "https://schema.org",

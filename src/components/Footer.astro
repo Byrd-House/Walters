@@ -1,7 +1,7 @@
 ---
 import { site, nav } from "../data/site";
 const year = new Date().getFullYear();
-const areas = site.areas.join(", ");
+const areas = site.areasServed.join(", ");
 // Mirror the nav wordmark: apostrophe stripped, set uppercase + letter-spaced below.
 const wordmark = site.name.replace(/['']/g, "");
 ---

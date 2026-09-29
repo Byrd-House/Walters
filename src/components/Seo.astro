@@ -43,7 +43,7 @@ const jsonLd = {
   url: Astro.site?.href,
   image: ogImage,
   ...(sameAs.length ? { sameAs } : {}),
-  areaServed: site.areas.map((a) => ({ "@type": "City", name: a })),
+  areaServed: site.areasServed.map((a) => ({ "@type": "City", name: a })),
   address: {
     "@type": "PostalAddress",
     addressRegion: site.region,
