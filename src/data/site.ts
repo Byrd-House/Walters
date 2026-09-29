@@ -30,8 +30,11 @@ export const site = {
   // the script is live understates what the site does; the reverse claims
   // tracking that isn't running.
   tracking: {
-    plausible: false, // cookieless, aggregate only, no personal data
-    metaPixel: false, // sets cookies; shares visit + form data with Meta for ads
+    plausible: false as boolean, // cookieless, aggregate only, no personal data
+    // Pixel ID, or null when off. Holds the ID rather than a separate boolean so
+    // the privacy disclosure and the script can never disagree about whether the
+    // pixel is live. Not a secret — it ships in the page source by design.
+    metaPixel: "1833699738043221" as string | null, // sets cookies; shares visit data with Meta
   },
   // Public profiles found 2026-09-18; phone on the listings matches site.phone.
   // These feed schema.org sameAs, which is how search/answer engines tie the
