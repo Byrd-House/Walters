@@ -5,9 +5,46 @@ import WhyUs from "../components/WhyUs.astro";
 import ServicesPreview from "../components/ServicesPreview.astro";
 import Testimonials from "../components/Testimonials.astro";
 import QuoteSection from "../components/QuoteSection.astro";
+import { getCollection } from "astro:content";
+import { site } from "../data/site";
+
+// The home page carried no title or description of its own, so it fell back to the
+// bare legal name and the generic default — the two highest-leverage strings on
+// the site, unset. Prices here are the starting figures from src/data/faq.ts;
+// change them together or the SERP snippet drifts from the page.
+
+// Review schema from the real testimonials already on the page. The site declares
+// an aggregateRating on every page; individual reviews are what make that figure
+// checkable rather than asserted. Quotes and names are the customers' own — never
+// synthesise one to fill this out.
+//
+// Caveat: Google does not show review stars for a business reviewing itself on its
+// own site, so do not expect rich results from this. It is here for answer engines,
+// which read the markup regardless.
+const base = Astro.site?.href ?? "/";
+const reviews = (await getCollection("testimonials")).sort(
+  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
+);
+const reviewSchema = reviews.map((r) => ({
+  "@context": "https://schema.org",
+  "@type": "Review",
+  itemReviewed: {
+    "@type": "LandscapingBusiness",
+    name: site.legalName,
+    telephone: site.phone,
+    url: base,
+  },
+  author: { "@type": "Person", name: r.data.author },
+  reviewRating: { "@type": "Rating", ratingValue: r.data.rating, bestRating: 5, worstRating: 1 },
+  reviewBody: r.data.quote,
+}));
 ---
 
-<BaseLayout>
+<BaseLayout
+  title={`Landscaping & Construction in Chapel Hill, NC · ${site.legalName}`}
+  description={`Owner-operated landscaping and construction across Chapel Hill, Durham, and Hillsborough. Mowing from $60, mulch from $450. Free estimates, fully insured.`}
+  schema={reviewSchema}
+>
   <Hero />
   <ServicesPreview />
   <QuoteSection />

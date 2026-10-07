@@ -1,0 +1,79 @@
+---
+import { site } from "../data/site";
+
+// The whole Meta Pixel surface: base code, the no-JS fallback, and the
+// automatic Contact events. Kept in one file because site.tracking.metaPixel is
+// also what the privacy policy renders its cookie/third-party disclosure from —
+// everything the pixel does needs to be visible in one place, so the page can
+// never claim less tracking than the site performs.
+//
+// Digits-only guard because the ID is interpolated straight into inline script.
+const pixelId = /^\d+$/.test(site.tracking.metaPixel ?? "") ? site.tracking.metaPixel : null;
+const pixelSnippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${pixelId}');fbq('track','PageView');`;
+---
+
+{
+  pixelId && (
+    <>
+      <script is:inline set:html={pixelSnippet} />
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style="display:none"
+          alt=""
+          src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+        />
+      </noscript>
+    </>
+  )
+}
+
+{/* Outside the gate on purpose: Astro hoists bundled scripts into the page
+    regardless of the branch they're written in, so gating this one here would
+    only look like it worked. It doesn't need the gate — trackContact no-ops
+    whenever fbq is absent, which covers both the pixel being off and a visitor
+    blocking it. */}
+<script>
+  import { trackContact } from "../lib/analytics/meta";
+
+  const CHANNEL = { tel: "phone", mailto: "email" } as const;
+  const LINKS = "a[href^='tel:'],a[href^='mailto:']";
+
+  const channelOf = (link: Element) =>
+    CHANNEL[link.getAttribute("href")!.split(":")[0] as keyof typeof CHANNEL];
+
+  // Delegated from the document rather than bound per link, so every tel:/mailto:
+  // on the site counts — the sitewide footer, /contact, /privacy, /terms — and a
+  // link added later is covered without anyone remembering to tag it. Capture
+  // phase and no preventDefault: the click still dials or opens the mail client
+  // exactly as before, we only observe it.
+  document.addEventListener(
+    "click",
+    (e) => {
+      const target = e.target instanceof Element ? e.target : null;
+      const link = target?.closest(LINKS);
+      if (link) trackContact(channelOf(link), "click");
+    },
+    true,
+  );
+
+  // On a laptop a tel: link usually does nothing, so the real gesture is
+  // selecting the number and copying it. Without this, desktop contact intent
+  // reads as zero. Only fires when the selection starts inside the link itself —
+  // copying a whole paragraph that happens to contain it is not someone reaching
+  // for the phone.
+  document.addEventListener("copy", () => {
+    const selection = document.getSelection();
+    if (!selection || selection.isCollapsed) return;
+    const node = selection.anchorNode;
+    const el = node instanceof Element ? node : node?.parentElement;
+    const link = el?.closest(LINKS);
+    if (link) trackContact(channelOf(link), "copy");
+  });
+</script>

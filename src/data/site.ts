@@ -7,19 +7,38 @@ export const site = {
   // the "LANDSCAPING" rule, so the two read as one name.
   name: "Jesse Walters",
   legalName: "Jesse Walters Landscaping",
-  // Google Business Profile name. Differs from legalName above — kept so
-  // structured data can declare both and answer engines resolve them as one
-  // business. TODO[CONFIRM]: exact GBP spelling before the profile is linked.
-  gbpName: "Jesse Walters Landscape & Maintenance",
   tagline: "Landscaping",
   phone: "(919) 441-7049",
   phoneHref: "tel:+19194417049",
   email: "jbwalters3327@gmail.com" as string | null,
-  // Confirmed 2026-09-18: no fixed business hours, so no openingHours is
-  // emitted in JSON-LD. Omission is correct here — inventing hours would be
-  // worse than having none.
-  hours: null as string | null,
+  // Confirmed by the owner 2026-09-29. `display` is the human string in the
+  // footer; `opens`/`closes` are 24h for schema.org openingHoursSpecification,
+  // which is what puts hours in the Google listing and lets an answer engine say
+  // whether the business is open right now. Keep the two in sync.
+  hours: {
+    display: "Monday–Friday, 7am–6pm",
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    opens: "07:00",
+    closes: "18:00",
+  },
+  // Towns named in the hero. Deliberately the three the business is best known
+  // for — the hero line has to stay readable. The full list is areasServed.
   areas: ["Chapel Hill", "Durham", "Hillsborough"],
+  // Every town served, confirmed by Jesse 2026-09-29. Drives areaServed in the
+  // LocalBusiness and Service JSON-LD, and is rendered in the footer and on
+  // /contact: schema naming a town that appears nowhere in the page text is a
+  // weak signal, so these are stated on the page as well as declared.
+  areasServed: [
+    "Chapel Hill",
+    "Durham",
+    "Hillsborough",
+    "Carrboro",
+    "Pittsboro",
+    "Mebane",
+    "Cedar Grove",
+    "Hurdle Mills",
+    "Eli Whitney",
+  ],
   zip: "27516",
   region: "NC",
   rating: { value: 5.0, count: 26 },
@@ -30,23 +49,38 @@ export const site = {
   // the script is live understates what the site does; the reverse claims
   // tracking that isn't running.
   tracking: {
-    plausible: false, // cookieless, aggregate only, no personal data
-    metaPixel: false, // sets cookies; shares visit + form data with Meta for ads
+    plausible: false as boolean, // cookieless, aggregate only, no personal data
+    // Vercel Web Analytics, rendered by <Analytics /> in BaseLayout. Cookieless:
+    // visitors are a hash of the incoming request, discarded after 24 hours.
+    // True because the script ships on every page — it arrived via two Vercel
+    // bot PRs that left the privacy policy untouched, which is the exact drift
+    // these flags exist to prevent.
+    vercelAnalytics: true as boolean,
+    // Pixel ID, or null when off. Holds the ID rather than a separate boolean so
+    // the privacy disclosure and the script can never disagree about whether the
+    // pixel is live. Not a secret — it ships in the page source by design.
+    // Governs BOTH halves of the Meta integration: the browser pixel
+    // (MetaPixel.astro: PageView, Contact, Lead) and the server-side Conversions
+    // API event for the same pixel (lib/analytics/capi.ts), which needs
+    // META_CAPI_ACCESS_TOKEN as well. Null here turns off both.
+    metaPixel: "1833699738043221" as string | null, // sets cookies; shares visit data with Meta
   },
-  // Public profiles found 2026-09-18; phone on the listings matches site.phone.
-  // These feed schema.org sameAs, which is how search/answer engines tie the
-  // site, the Google Business Profile, and the social accounts to one entity.
-  // TODO[CONFIRM]: verify both are the owner's current, active profiles.
+  // Confirmed by the owner 2026-09-29. These replaced two profiles found by
+  // search on 2026-09-18 that turned out to be the wrong accounts — a different
+  // Facebook page ID and a different Instagram handle. Feeds schema.org sameAs,
+  // which is how search/answer engines tie the site, the Google Business
+  // Profile, and the social accounts to one entity; a wrong URL here points that
+  // link at someone else's account, so only ever set these from the owner.
   social: {
-    facebook:
-      "https://www.facebook.com/p/Jesse-Walters-Landscape-and-Maintenance-61576343244940/" as string | null,
-    instagram: "https://www.instagram.com/jwlandscapeandmaintenance/" as string | null,
+    facebook: "https://www.facebook.com/profile.php?id=61594689551359" as string | null,
+    instagram: "https://www.instagram.com/jessewalterslandscaping/" as string | null,
   },
 };
 
 export const nav = [
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -101,7 +135,7 @@ export const serviceGroups: ServiceGroup[] = [
       "Regrading, swales, and drainage work that moves water away from your home and keeps the yard from washing out.",
     intro:
       "Regrading, swales, and drainage work that moves water away from your home and keeps the yard " +
-      "from washing out — protecting your investment.",
+      "from washing out, protecting your investment.",
     items: ["Regrading", "Drainage & swales", "French drains", "Erosion control"],
     homeCard: true,
   },

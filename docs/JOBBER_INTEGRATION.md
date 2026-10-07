@@ -11,7 +11,8 @@ lead regardless, so nothing here is load-bearing for lead capture — Jobber is 
 convenience sync.
 
 Roles below are tagged **[Dev]** (Byrd House) and **[Jesse]** (account owner). Jesse's
-total involvement is ~5 minutes: one authorize click + creating one custom field.
+total involvement is ~2 minutes: one authorize click. The custom field is created by
+the app, not by hand — see Part C.
 
 ---
 
@@ -47,6 +48,17 @@ JOBBER_REDIRECT_URI=http://localhost:5173/callback
 The refresh token grants access to Jesse's data, so **Jesse must approve it once** (only
 an Owner/Admin can). Byrd House never needs to log into his account.
 
+> **Re-authorizing revokes the previous refresh token immediately.** The moment Jesse
+> approves again, the token in production stops working — Jobber sync is down until the
+> new one is deployed. Leads are unaffected (the email sink is independent), but do the
+> re-auth and the redeploy together, not hours apart.
+
+> **Ignore the `scopes` claim on the authorization code.** The code is a JWT, and on a
+> *re-authorization* its `scopes` claim comes back empty even when the grant is fully
+> intact — it is not the granted scope set. The authoritative value is the `scope` claim
+> on the **access token** you get back from the exchange. Do not treat an empty `scopes`
+> on the code as a misconfiguration; exchange it and check the access token.
+
 1. **[Dev]** Print the authorize URL:
    ```bash
    node scripts/jobber-auth.mjs
@@ -77,28 +89,56 @@ JOBBER_API_VERSION=2025-04-16   # confirmed valid in Jobber's current docs; chec
 
 ---
 
-## Part C — Create the custom field & get its ID · [Jesse] + [Dev] (~3 min)
+## Part C — Create the custom field & get its ID · [Dev] (~3 min)
 
-1. **[Jesse]** In Jobber: **Gear → Settings → Custom Fields → Add**. Create a **Text**
-   field attached to **Clients**, named e.g. **"Website request"**. Save.
-2. **[Dev]** Fetch its configuration ID with the access token:
+> **The field must be created by the app, not by hand.** Jobber only lets an app read
+> or write custom fields that the **app itself** created. A field Jesse adds in
+> Settings → Custom Fields is invisible to the API — every query for it returns
+> `"hidden due to permissions"` — so its ID can never be used here. There is no way
+> around this; it is an object-level restriction, not a scope you can widen.
+
+1. **[Dev]** Confirm the app's **Custom Field Configurations** scope has **Read +
+   Write**, and that **"Optional" is UNTICKED**. An optional scope can be skipped at
+   consent time, which grants Read but silently withholds Write.
+2. **[Jesse]** If the scope changed, re-authorize (Part B again) — scope changes force
+   fresh consent. Put the new `JOBBER_REFRESH_TOKEN` in `.env` and Vercel.
+3. **[Dev]** Create the fields and print their configuration IDs:
    ```bash
-   curl -s https://api.getjobber.com/api/graphql \
-     -H "Authorization: Bearer $JOBBER_TOKEN" \
-     -H "X-JOBBER-GRAPHQL-VERSION: 2025-04-16" \
-     -H "Content-Type: application/json" \
-     -d '{"query":"{ customFieldConfigurations { nodes { id name } } }"}'
+   node scripts/jobber-custom-field.mjs
    ```
-   Find the node whose `name` is "Website request" and copy its `id`.
+   Safe to re-run — existing fields are reused, missing ones created. If Write is missing
+   it says so and tells you what to fix.
 
-Add to `.env`:
+Add the printed value to `.env` **and** Vercel → Settings → Environment Variables:
 
 ```bash
-JOBBER_LEAD_CUSTOM_FIELD_ID=<the id from above>
+JOBBER_LEAD_CUSTOM_FIELD_IDS={"services":"...","address":"...","message":"...","submitted":"..."}
 ```
+
+> **One field per datum, not one packed summary.** Jobber has no multi-line text custom
+> field — the six types are Text, Area, Link, Numeric, TrueFalse and Dropdown, and "Area"
+> is a physical measurement (`length`/`width` + unit), not a text area. Newlines inside a
+> single Text value are stored but collapse when Jobber renders them, so a packed summary
+> runs together on one line. Separate fields render as separate labeled rows.
+
+> **App-created fields cannot be removed.** Jobber refuses to archive any field associated
+> with an app, including the app's own: `"Cannot archive custom field configuration … because
+> it is associated with an app"`. Editing only exposes `name` and default values. So adding a
+> field here is effectively permanent — the script renames retired ones to `… (retired)` so
+> they read as dead, and deleting them for real is a manual step in Jobber's UI, if it allows
+> it at all. Think before adding fields.
+
+Jobber displays the app's name and logo beside each value wherever Jesse sees it. That
+is expected for app-configured fields and cannot be turned off.
 
 > If you skip this, clients are still created — just without the details field (details
 > always remain in the lead email).
+
+> **Debugging note.** `CustomFieldConfiguration` is a GraphQL **union**, so a bare
+> `{ customFieldConfigurations { nodes { id name } } }` fails with
+> `"Selections can't be made directly on unions"`. Use inline fragments, and filter by
+> `createdByThisApp: true` — without that filter the account's other custom fields
+> raise a permission error that nulls the whole response.
 
 ---
 
@@ -141,7 +181,7 @@ Local `.env` now has all six values:
 | `JOBBER_REDIRECT_URI` | Part A |
 | `JOBBER_REFRESH_TOKEN` | Part B |
 | `JOBBER_API_VERSION` | `2025-04-16` (verify latest) |
-| `JOBBER_LEAD_CUSTOM_FIELD_ID` | Part C |
+| `JOBBER_LEAD_CUSTOM_FIELD_IDS` | Part C |
 
 Set the **same values in Vercel**: Project → **Settings → Environment Variables** →
 add each for **Production** (and Preview if you want test submissions to sync). Redeploy

@@ -5,6 +5,7 @@ export const prerender = false; // the only server route; served as a function
 import { parseLead } from "../../lib/leads/schema";
 import { runLeadPipeline } from "../../lib/leads/pipeline";
 import { rateLimit } from "../../lib/rate-limit";
+import { sendLeadEvent } from "../../lib/analytics/capi";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -37,5 +38,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       502,
     );
   }
+
+  // Server half of the Meta Lead event. Deliberately after `captured`, so a
+  // submission the pipeline dropped never reports a conversion — this is also
+  // the one place that knows the difference, since a honeypot hit and a real
+  // save both look like {ok:true} to the browser. Awaited because a Vercel
+  // function can be frozen the moment it responds, and never throws, so the
+  // visitor's confirmation can't hinge on Meta being reachable.
+  await sendLeadEvent({ lead: parsed.lead, eventId: parsed.eventId, request, ip });
+
   return json({ ok: true });
 };

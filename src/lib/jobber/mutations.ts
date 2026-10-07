@@ -4,9 +4,9 @@ import { serviceGroups } from "../../data/site";
 
 // Jobber's public API CANNOT create a "Request" (requestCreate/requestUpsert were
 // removed 2023-08-18 and never re-added), and client NOTES were removed the same
-// day. So a website lead is synced as a Client, and the request details (services,
-// timing, message) ride along in a Client custom TEXT field. The email sink always
-// captures the full lead regardless, so this sync is purely a convenience for Jesse.
+// day. So a website lead is synced as a Client, and the request details ride along
+// in Client custom TEXT fields. The email sink always captures the full lead
+// regardless, so this sync is purely a convenience for Jesse.
 export const CLIENT_CREATE = /* GraphQL */ `
   mutation CreateLead($input: ClientCreateInput!) {
     clientCreate(input: $input) {
@@ -16,23 +16,33 @@ export const CLIENT_CREATE = /* GraphQL */ `
   }
 `;
 
-const TIMING_LABELS: Record<string, string> = {
-  asap: "As soon as possible",
-  "few-weeks": "In the next few weeks",
-  planning: "Planning / researching",
-};
-
 const titleBySlug = Object.fromEntries(serviceGroups.map((s) => [s.slug, s.title]));
 
-// Human-readable summary of the request, stored in the Client custom field.
-function requestSummary(lead: Lead): string {
-  const services = lead.services.map((s) => titleBySlug[s] ?? s).join(", ") || "(none specified)";
-  const lines = [`Services: ${services}`];
-  if (lead.timing) lines.push(`Timing: ${TIMING_LABELS[lead.timing] ?? lead.timing}`);
-  if (lead.address) lines.push(`Address: ${lead.address}`);
-  if (lead.message) lines.push(`Message: ${lead.message}`);
-  lines.push(`Submitted via ${lead.source} on ${lead.submittedAt}`);
-  return lines.join("\n");
+// One custom field per datum. Jobber has no multi-line text type — "Area" is a
+// physical measurement, not a text area — so newlines packed into a single value
+// collapse when rendered and the details run together. Separate fields render as
+// separate labeled rows. Keys match scripts/jobber-custom-field.mjs; a key that
+// exists here but not there (or vice versa) silently drops that datum.
+const FIELD_VALUES: Record<string, (lead: Lead) => string | undefined> = {
+  services: (lead) => lead.services.map((s) => titleBySlug[s] ?? s).join(", ") || undefined,
+  address: (lead) => lead.address,
+  message: (lead) => lead.message,
+  submitted: (lead) => `${lead.source} · ${lead.submittedAt}`,
+};
+
+// JOBBER_LEAD_CUSTOM_FIELD_IDS is a JSON map of key → configuration ID, printed by
+// scripts/jobber-custom-field.mjs. Malformed JSON logs and degrades to no custom
+// fields rather than throwing — the client still syncs, and the lead email (the
+// durable capture) is unaffected either way.
+function leadFieldIds(): Record<string, string> {
+  const raw = env("JOBBER_LEAD_CUSTOM_FIELD_IDS");
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw) as Record<string, string>;
+  } catch {
+    console.error("[jobber] JOBBER_LEAD_CUSTOM_FIELD_IDS is not valid JSON — skipping custom fields");
+    return {};
+  }
 }
 
 // [VERIFY-LIVE] Confirm every field name in Jobber's GraphiQL before going live:
@@ -51,13 +61,16 @@ export function toClientCreateInput(lead: Lead) {
   if (lead.address) {
     input.billingAddress = { street1: lead.address };
   }
-  // Attach the request details as a Client custom text field — but only when the
-  // account's custom-field config ID is set. Create a TEXT custom field on Clients
-  // in Jobber ("Website request"), then set JOBBER_LEAD_CUSTOM_FIELD_ID to its
-  // configuration ID. Without it, the client is created without these details.
-  const cfId = env("JOBBER_LEAD_CUSTOM_FIELD_ID");
-  if (cfId) {
-    input.customFields = [{ customFieldConfigurationId: cfId, valueText: requestSummary(lead) }];
-  }
+  // The fields must be app-created: Jobber hides custom fields the app didn't
+  // create, so any made by hand in Settings can never be written here. Run
+  // `node scripts/jobber-custom-field.mjs` to create them and print the ID map.
+  // Without it the client still syncs, just without these details.
+  const ids = leadFieldIds();
+  const customFields = Object.entries(FIELD_VALUES).flatMap(([key, read]) => {
+    const id = ids[key];
+    const value = read(lead);
+    return id && value ? [{ customFieldConfigurationId: id, valueText: value }] : [];
+  });
+  if (customFields.length) input.customFields = customFields;
   return input;
 }

@@ -5,20 +5,20 @@ import { site } from "../data/site";
 
 // Describes what the site ACTUALLY does. Every claim here is traceable to code:
 // collected fields → src/lib/leads/schema.ts, destinations → src/lib/leads/,
-// IP handling → src/lib/rate-limit.ts, third-party requests → BaseLayout.astro.
+// IP handling → src/lib/rate-limit.ts, third-party requests → MetaPixel.astro.
 // If any of those change, change this page in the same commit.
-const { plausible, metaPixel } = site.tracking;
-const anyTracking = plausible || metaPixel;
+const { plausible, metaPixel, vercelAnalytics } = site.tracking;
+const anyTracking = plausible || metaPixel || vercelAnalytics;
 ---
 
 <BaseLayout
   title={`Privacy Policy · ${site.legalName}`}
   description={`How ${site.legalName} handles the information you share through this website.`}
 >
-  <LegalPage title="Privacy Policy" updated="September 18, 2026">
+  <LegalPage title="Privacy Policy" updated="September 29, 2026">
     <p>
       This policy covers <strong>{site.legalName}</strong> ("we," "us") and this website. It explains
-      what we collect, why, and who else sees it. We've kept it specific rather than generic — it
+      what we collect, why, and who else sees it. We've kept it specific rather than generic. It
       describes what this site actually does, not what a website might do.
     </p>
 
@@ -26,14 +26,14 @@ const anyTracking = plausible || metaPixel;
     <p>
       <strong>Information you give us.</strong> When you submit the quote form, we receive your name,
       phone number, and email address, plus the optional details you choose to add: your address or
-      neighborhood, which services you're interested in, your timing, and your message. Nothing on
+      neighborhood, which services you're interested in, and your message. Nothing on
       this site asks for payment details, and we don't collect them here.
     </p>
     <p>
       <strong>Information collected automatically.</strong> Our host records standard server logs
       (IP address, browser type, pages requested, timestamps) as part of delivering the site. We
       also check your IP address briefly when you submit the form, to limit repeat submissions from
-      the same source. That check happens in memory and is discarded within about a minute — it
+      the same source. That check happens in memory and is discarded within about a minute. It
       isn't written to a database or tied to your submission.
     </p>
 
@@ -51,10 +51,23 @@ const anyTracking = plausible || metaPixel;
       plausible && (
         <p>
           <strong>Plausible Analytics.</strong> We use Plausible to see how many people visit and
-          which pages they read. Plausible is cookieless and collects no personal information — it
+          which pages they read. Plausible is cookieless and collects no personal information. It
           doesn't build a profile of you, doesn't track you across other websites, and the data we
           see is aggregate only. There is nothing for you to opt out of because there is nothing
           identifying you.
+        </p>
+      )
+    }
+    {
+      vercelAnalytics && (
+        <p>
+          <strong>Vercel Web Analytics.</strong> Our host counts page views so we can see which
+          pages people actually read. It <strong>sets no cookies</strong> and doesn't follow you to
+          other sites. Instead of storing who you are, it turns each incoming request into a hash
+          and throws that away after 24 hours. What it records is the page you viewed, the site you
+          came from, your approximate location (country, region, city), and your device type,
+          operating system, and browser. The numbers we see are aggregate counts, not a profile of
+          you, and they aren't tied to your IP address.
         </p>
       )
     }
@@ -65,16 +78,31 @@ const anyTracking = plausible || metaPixel;
             <strong>Meta Pixel.</strong> We use the Meta Pixel (Facebook and Instagram) to measure
             our advertising and to show ads to people who have visited this site. Unlike the rest of
             this site, the pixel <strong>does set cookies</strong>, and it shares information with
-            Meta — the pages you view here, the fact that you submitted the quote form, and
+            Meta: the pages you view here, when you tap or copy our phone number or email address,
+            the fact that you submitted the quote form and which services you asked about, and
             identifiers such as your IP address and cookie ID. Meta uses that information under{" "}
             <a href="https://www.facebook.com/privacy/policy/">its own privacy policy</a>, not ours.
           </p>
           <p>
-            <strong>How to turn it off.</strong> You can control this through your{" "}
-            <a href="https://www.facebook.com/adpreferences/ad_settings">Meta ad preferences</a>, by
-            blocking third-party cookies in your browser, or with a tracker-blocking extension. The
-            quote form works normally either way — blocking the pixel will not stop us from
-            receiving your request or affect the service you get.
+            <strong>Conversions API.</strong> When you submit the quote form, our server also
+            reports that submission to Meta directly, so the measurement still works if the pixel
+            was blocked in your browser. Your name, email address, and phone number are
+            <strong> hashed</strong> before they leave our server, meaning they're turned into an
+            irreversible fingerprint rather than readable text. Meta compares those fingerprints
+            against its own records to match the submission to a Facebook or Instagram account,
+            which is what makes our ad reporting work. Your IP address and browser user agent are
+            sent as they are. We don't send your address or your message.
+          </p>
+          <p>
+            <strong>How to turn it off.</strong> Blocking third-party cookies or using a
+            tracker-blocking extension stops the pixel, but to be straight with you, it does not
+            stop the server-side report described above, because that one doesn't go through your
+            browser at all. What covers both is your{" "}
+            <a href="https://www.facebook.com/adpreferences/ad_settings">Meta ad preferences</a>,
+            where you can limit how Meta uses activity from businesses like ours. You can also
+            simply call or email us instead of using the form. Either way the quote form works
+            normally, and none of this affects whether we receive your request or the service you
+            get.
           </p>
         </>
       )
@@ -98,21 +126,22 @@ const anyTracking = plausible || metaPixel;
     </p>
     <ul>
       <li>
-        <strong>Vercel</strong> — hosts the website and runs the form's submission endpoint.
+        <strong>Vercel</strong>: hosts the website and runs the form's submission endpoint
+        {vercelAnalytics && ", and counts page views as described above"}.
       </li>
       <li>
-        <strong>Resend</strong> — delivers your quote request to us by email.
+        <strong>Resend</strong>: delivers your quote request to us by email.
       </li>
       <li>
-        <strong>Jobber</strong> — our scheduling and customer management software. Quote requests are
+        <strong>Jobber</strong>: our scheduling and customer management software. Quote requests are
         saved there as a customer record so we can follow up and schedule the work.
       </li>
       <li>
-        <strong>Adobe Fonts</strong> — serves the typefaces this site uses. Loading a page requests
+        <strong>Adobe Fonts</strong>: serves the typefaces this site uses. Loading a page requests
         the fonts from Adobe, which means Adobe's servers see your IP address.
       </li>
-      {plausible && <li><strong>Plausible Analytics</strong> — aggregate visitor statistics.</li>}
-      {metaPixel && <li><strong>Meta</strong> — advertising measurement and retargeting, as described above.</li>}
+      {plausible && <li><strong>Plausible Analytics</strong>: aggregate visitor statistics.</li>}
+      {metaPixel && <li><strong>Meta</strong>: advertising measurement and retargeting, as described above.</li>}
     </ul>
     <p>
       We may also disclose information if the law requires it, or if we need to establish or defend
@@ -123,13 +152,13 @@ const anyTracking = plausible || metaPixel;
     <p>
       Quote requests stay in our email and in Jobber as part of our customer records. We keep them
       while we're working with you and afterward for our business and tax records. You can ask us to
-      delete yours — see below.
+      delete yours. See below.
     </p>
 
     <h2>Your choices</h2>
     <p>
       Email or call us and we'll tell you what we have about you, correct it, or delete it. There's no
-      form and no process to go through — just ask. If you'd rather not have your information in a
+      form and no process to go through. Just ask. If you'd rather not have your information in a
       system at all, call us instead of using the form and we'll take your request by phone.
     </p>
 

@@ -1,5 +1,5 @@
 ---
-import { site } from "../data/site";
+import { site, serviceGroups } from "../data/site";
 
 interface Props {
   title?: string;
@@ -25,25 +25,62 @@ const ogImage = new URL(image, Astro.site).href;
 
 const tabTitle = title;
 
-// schema.org LocalBusiness (brief §8). `alternateName` + `sameAs` are the entity
-// signals: they tell search and answer engines that this site, the Google
-// Business Profile, and the social accounts are one business rather than three.
-// No openingHours — the business keeps no fixed hours (site.hours is null), and
-// omitting the property is correct where inventing one would not be.
+// schema.org LocalBusiness (brief §8). `sameAs` carries the entity signal: it
+// tells search and answer engines that this site and the social accounts are one
+// business rather than three. There is no `alternateName` — the owner renamed the
+// Google Business Profile to match `legalName` on 2026-09-29, so declaring an
+// alias would assert a second name the business no longer uses.
+// openingHoursSpecification comes from site.hours, confirmed by the owner.
 const sameAs = [site.social.facebook, site.social.instagram].filter(Boolean) as string[];
+
+// BreadcrumbList for every page below the root. Search results render these as a
+// path instead of a bare URL, and answer engines use them to place a page inside
+// the site rather than treating it as a loose document. Generated from the path so
+// a new page gets one without remembering to ask.
+const BREADCRUMB_LABELS: Record<string, string> = {
+  services: "Services",
+  about: "About",
+  faq: "FAQ",
+  "service-area": "Service Area",
+  contact: "Contact",
+  privacy: "Privacy Policy",
+  terms: "Terms of Service",
+};
+
+const segments = Astro.url.pathname.split("/").filter(Boolean);
+const breadcrumbSchema =
+  segments.length && !noindex
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: Astro.site?.href },
+          ...segments.map((seg, i) => ({
+            "@type": "ListItem",
+            position: i + 2,
+            name: BREADCRUMB_LABELS[seg] ?? seg,
+            item: new URL(`/${segments.slice(0, i + 1).join("/")}`, Astro.site).href,
+          })),
+        ],
+      }
+    : null;
+
+// Everything below is stated fact from site data or Jesse's questionnaire. Do not
+// add a property here that needs a guess — an invented figure in structured data
+// is repeated verbatim by answer engines, with no visible page text to correct it.
+const paymentAccepted = "Cash, Check, Credit Card, Venmo, Bank Transfer";
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LandscapingBusiness",
   name: site.legalName,
-  alternateName: site.gbpName,
   description,
   telephone: site.phone,
   ...(site.email ? { email: site.email } : {}),
   url: Astro.site?.href,
   image: ogImage,
   ...(sameAs.length ? { sameAs } : {}),
-  areaServed: site.areas.map((a) => ({ "@type": "City", name: a })),
+  areaServed: site.areasServed.map((a) => ({ "@type": "City", name: a })),
   address: {
     "@type": "PostalAddress",
     addressRegion: site.region,
@@ -55,6 +92,20 @@ const jsonLd = {
     ratingValue: site.rating.value,
     reviewCount: site.rating.count,
   },
+  // From the FAQ answers — real terms, not boilerplate.
+  paymentAccepted,
+  currenciesAccepted: "USD",
+  // Owner-operated is the actual differentiator against the franchises, and it
+  // gives answer engines a person to resolve "who is Jesse Walters" against.
+  founder: { "@type": "Person", name: site.name },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: site.hours.days,
+    opens: site.hours.opens,
+    closes: site.hours.closes,
+  },
+  priceRange: "$$",
+  knowsAbout: serviceGroups.map((g) => g.title),
 };
 ---
 
@@ -76,4 +127,5 @@ const jsonLd = {
 <meta name="twitter:image" content={ogImage} />
 
 <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
 {extraSchema.map((entry) => <script type="application/ld+json" set:html={JSON.stringify(entry)} />)}

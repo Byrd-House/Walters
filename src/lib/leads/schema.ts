@@ -10,15 +10,21 @@ const schema = z.object({
   phone: z.string().trim().min(7, "Please enter a phone number").max(40),
   email: z.email("Please enter a valid email").max(200),
   address: z.string().trim().max(200).optional(),
-  timing: z.enum(["", "asap", "few-weeks", "planning"]).optional(),
   message: z.string().trim().max(2000).optional(),
   services: z.array(z.string()).default([]),
 });
 
+// The Meta event ID rides alongside the lead rather than on it: it's tracking
+// context for this one submission, not a fact about the customer, and only the
+// Conversions API call reads it.
 export type ParseResult =
-  | { kind: "ok"; lead: Lead }
+  | { kind: "ok"; lead: Lead; eventId?: string }
   | { kind: "invalid"; errors: Record<string, string> }
   | { kind: "honeypot" };
+
+// Browser-supplied, so it's validated rather than trusted: a UUID-shaped token,
+// length-bounded, before it's echoed into a Graph API payload.
+const EVENT_ID = /^[A-Za-z0-9-]{8,64}$/;
 
 export async function parseLead(request: Request): Promise<ParseResult> {
   const form = await request.formData();
@@ -35,7 +41,6 @@ export async function parseLead(request: Request): Promise<ParseResult> {
     phone: String(form.get("phone") ?? ""),
     email: String(form.get("email") ?? ""),
     address: String(form.get("address") ?? ""),
-    timing: String(form.get("timing") ?? ""),
     message: String(form.get("message") ?? ""),
     services: form
       .getAll("services")
@@ -63,10 +68,11 @@ export async function parseLead(request: Request): Promise<ParseResult> {
     phone: d.phone,
     address: d.address || undefined,
     services: d.services,
-    timing: d.timing || undefined,
     message: d.message || undefined,
     source: "website-quote-form",
     submittedAt: new Date().toISOString(),
   };
-  return { kind: "ok", lead };
+
+  const eventId = String(form.get("meta_event_id") ?? "");
+  return { kind: "ok", lead, eventId: EVENT_ID.test(eventId) ? eventId : undefined };
 }

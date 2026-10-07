@@ -68,6 +68,8 @@ const labelClass = "block font-sans text-small font-bold text-green-900";
 </form>
 
 <script>
+  import { eventId, trackLead } from "../lib/analytics/meta";
+
   const form = document.getElementById("quote-form") as HTMLFormElement | null;
   const status = document.getElementById("quote-status");
   const submit = document.getElementById("qf-submit") as HTMLButtonElement | null;
@@ -87,15 +89,30 @@ const labelClass = "block font-sans text-small font-bold text-green-900";
       status.className = "font-sans text-small text-green-700";
     }
 
+    // Read off the body before the reset below clears the fields.
+    const body = new FormData(form);
+    const services = body.getAll("services").map(String);
+
+    // One ID for this submission, shared by the pixel event below and the
+    // Conversions API event the server sends. Matching event_name + event ID is
+    // what tells Meta the two are one lead; without it a submission that
+    // reaches both paths is counted twice.
+    const leadEventId = eventId();
+    body.set("meta_event_id", leadEventId);
+
     try {
       const res = await fetch(form.action, {
         method: "POST",
         headers: { Accept: "application/json" },
-        body: new FormData(form),
+        body,
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
         form.reset();
+        // Meta Lead, only once the pipeline confirms the lead was captured. A
+        // 502 or a validation failure is not a lead, and counting one would
+        // teach the ad account to buy traffic that never reached Jesse.
+        trackLead(services, leadEventId);
         if (status) {
           status.textContent = "Thanks, we've got it. Jesse will reach out shortly.";
           status.className = "font-sans text-small font-bold text-green-800";

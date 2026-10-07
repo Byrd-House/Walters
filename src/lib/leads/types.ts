@@ -8,7 +8,6 @@ export interface Lead {
   phone: string;
   address?: string;
   services: string[]; // service group slugs
-  timing?: string;
   message?: string;
   source: string;
   submittedAt: string; // ISO 8601

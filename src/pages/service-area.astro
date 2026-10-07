@@ -1,0 +1,101 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteSection from "../components/QuoteSection.astro";
+import { site, serviceGroups } from "../data/site";
+
+// Deliberately ONE page rather than nine near-identical town pages. We have no
+// town-specific facts from Jesse, so per-town pages would differ only by a
+// place name — which is the textbook definition of a doorway page and is
+// penalised, not rewarded. This page names every town in crawlable text, which
+// is what makes the areaServed schema credible, without manufacturing content.
+const base = Astro.site?.href ?? "/";
+
+const areaSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Landscaping and construction",
+  serviceType: serviceGroups.map((g) => g.title),
+  provider: {
+    "@type": "LandscapingBusiness",
+    name: site.legalName,
+    telephone: site.phone,
+    url: base,
+  },
+  areaServed: site.areasServed.map((a) => ({
+    "@type": "City",
+    name: a,
+    containedInPlace: { "@type": "State", name: "North Carolina" },
+  })),
+  url: new URL("/service-area", base).href,
+};
+---
+
+<BaseLayout
+  title={`Service Area · ${site.legalName}`}
+  description={`Landscaping and construction across ${site.areasServed.slice(0, -1).join(", ")}, and ${site.areasServed.at(-1)}. Maintenance throughout, and larger projects further out.`}
+  schema={areaSchema}
+>
+  <section class="mx-auto max-w-7xl px-4 pb-6 pt-16 lg:px-6 lg:pb-10 lg:pt-24">
+    <div class="max-w-3xl">
+      <h1 class="font-heading text-h2 font-bold text-green-900">Where we work</h1>
+      <p class="mt-4 max-w-2xl font-sans text-body text-green-800 sm:text-lg/relaxed">
+        We're based in Chapel Hill and work across the western side of the Triangle. If you're
+        nearby and don't see your town, ask. For larger projects we travel.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-7xl px-4 pb-16 lg:px-6 lg:pb-24">
+    <section class="grid gap-8 border-t border-line py-12 lg:grid-cols-[16rem_1fr] lg:gap-16 lg:py-16">
+      <h2 class="font-heading text-h3 font-bold text-green-900">Towns we serve</h2>
+      <div class="max-w-2xl">
+        <p class="font-sans text-body text-green-800">
+          Recurring maintenance, including mowing, leaf cleanup, pruning, and mulch, runs across all of these:
+        </p>
+        <ul class="mt-5 grid grid-cols-2 gap-x-8 border-y border-line sm:grid-cols-3">
+          {
+            site.areasServed.map((town) => (
+              <li class="border-b border-line py-2.5 font-sans text-body text-green-900 last:border-b-0 sm:border-b-0">
+                {town}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-6 font-sans text-body text-green-800">
+          For larger projects like installs, grading and drainage, hardscaping, retaining walls,
+          concrete, and new construction, the range is wider. There isn't much we won't travel
+          for if the project is the right fit, so it's worth asking.
+        </p>
+      </div>
+    </section>
+
+    <section class="grid gap-8 border-t border-line py-12 lg:grid-cols-[16rem_1fr] lg:gap-16 lg:py-16">
+      <h2 class="font-heading text-h3 font-bold text-green-900">Working in the Triangle</h2>
+      <div class="max-w-2xl">
+        <p class="font-sans text-body text-green-800">
+          Mulch goes down best between January and June here. The leaves have finished falling by
+          then, so fresh mulch stays clean instead of disappearing under debris a few weeks later.
+          On a maintenance plan the beds get cleared as part of the routine, which makes mulch
+          worth laying any month of the year.
+        </p>
+        <p class="mt-4 font-sans text-body text-green-800">
+          Our mulch comes from a family-owned landscape supply in Chapel Hill. They take in tree and
+          brush material from landscapers working around the area and process it into mulch, so
+          what goes down in your beds is local wood.
+        </p>
+        <p class="mt-4 font-sans text-body text-green-800">
+          In spring and fall the wait for a first visit is two to three weeks at most; in winter
+          it's about a week. Storm cleanup, fallen trees, and drainage emergencies we take same day.
+        </p>
+        <p class="mt-6 font-sans text-body text-green-800">
+          More detail on pricing and scheduling is on the{" "}
+          <a class="font-bold text-green-700 underline hover:text-green-900" href="/faq">FAQ</a>, and
+          the full range of work is on{" "}
+          <a class="font-bold text-green-700 underline hover:text-green-900" href="/services">Services</a>.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <QuoteSection />
+</BaseLayout>

@@ -69,7 +69,8 @@ console** until these are set, so the form works immediately.
 | Var | Purpose |
 |---|---|
 | `RESEND_API_KEY`, `LEAD_FALLBACK_EMAIL`, `LEAD_FROM_EMAIL` | Email fallback (the guaranteed lead capture) via [Resend](https://resend.com). Verify a sending domain. |
-| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REDIRECT_URI`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION`, `JOBBER_LEAD_CUSTOM_FIELD_ID` | Jobber GraphQL integration (best-effort CRM sync — creates a Client per lead). See setup below. |
+| `JOBBER_CLIENT_ID`, `JOBBER_CLIENT_SECRET`, `JOBBER_REDIRECT_URI`, `JOBBER_REFRESH_TOKEN`, `JOBBER_API_VERSION`, `JOBBER_LEAD_CUSTOM_FIELD_IDS` | Jobber GraphQL integration (best-effort CRM sync — creates a Client per lead). See setup below. |
+| `META_CAPI_ACCESS_TOKEN`, `META_CAPI_TEST_EVENT_CODE`, `META_GRAPH_API_VERSION` | Meta Conversions API — the server-side half of the `Lead` event. See setup below. |
 
 ### How the lead pipeline behaves
 
@@ -106,15 +107,55 @@ not the system of record.
    node scripts/jobber-auth.mjs <code>  # prints JOBBER_REFRESH_TOKEN
    ```
    Paste the printed token into `JOBBER_REFRESH_TOKEN`.
-3. **(Optional) request details on the client** — in Jobber, create a **text custom field** on
-   Clients (e.g. "Website request"), then set `JOBBER_LEAD_CUSTOM_FIELD_ID` to its
-   `customFieldConfigurationId` (find it in GraphiQL via `customFieldConfigurations`). Without
-   it, the client is created without those details.
+3. **(Optional) request details on the client** — run `node scripts/jobber-custom-field.mjs`
+   and paste the JSON map it prints into `JOBBER_LEAD_CUSTOM_FIELD_IDS`. It creates one Text
+   custom field per datum (Jobber has no multi-line type, so a packed value runs together in
+   the UI). The fields must be app-created — Jobber hides ones made by hand in Settings from
+   the API. Without the map, the client is created without those details.
 4. **[VERIFY-LIVE]** in Jobber's GraphiQL before launch: the current `X-JOBBER-GRAPHQL-VERSION`
    date and the exact `ClientCreateInput` field names (`emails`/`phones`/`billingAddress`/
    `customFields`). These are isolated in `src/lib/jobber/mutations.ts` and `oauth.ts`.
 5. Creating a client auto-captures the app name as the Jobber **lead source**. Confirm Jesse's
    new-client notifications are enabled so leads reach his phone.
+
+## Meta Pixel & Conversions API
+
+The pixel ID lives in `src/data/site.ts` (`tracking.metaPixel`) because it ships in the page
+source anyway, and because the privacy policy renders its disclosure from the same value —
+the two can never drift. Setting it to `null` turns off **both** halves below.
+
+**Events sent** (`src/lib/analytics/meta.ts` — names are Meta's standard events, matched by
+string by the ad account's optimization objectives, so don't "tidy" them):
+
+| Event | Fires when | Where |
+|---|---|---|
+| `PageView` | every page | `MetaPixel.astro` (base code) |
+| `Contact` | a `tel:`/`mailto:` link is clicked, or the number/address is selected and copied | `MetaPixel.astro`, delegated from `document` |
+| `Lead` | the quote form submits **and** the pipeline confirms capture | `QuoteForm.astro` + `lib/analytics/capi.ts` |
+
+`Contact` is deduped per channel (phone/email) per page view — one person tapping the footer
+number twice has made contact once. Delegation means every `tel:`/`mailto:` on the site is
+covered (footer, `/contact`, `/privacy`, `/terms`) with no per-link markup to maintain.
+
+`Lead` is sent **twice on purpose**: once from the browser and once from the server, sharing
+one `event_id` so Meta collapses the pair into a single conversion. The browser half loses
+whatever ad blockers and ITP strip out; the server half (`sendLeadEvent`) sees every
+submission and so is the accurate one. It runs only after the lead pipeline reports
+`captured`, which is also the only place that can tell a real save from a honeypot hit —
+both look like `{ok:true}` to the browser. It never throws, so Meta being unreachable can't
+affect the visitor's confirmation.
+
+The server half hashes email/phone/first/last name (SHA-256, normalized per Meta's rules)
+and passes IP, user agent, and the `_fbp`/`_fbc` cookies unhashed, which is what Meta's
+spec requires. Address and message are never sent.
+
+**Setup:** mint a token in Events Manager → the pixel → Settings → *Generate access token*,
+and set `META_CAPI_ACCESS_TOKEN`. To verify, set `META_CAPI_TEST_EVENT_CODE` from Events
+Manager → *Test Events*, submit the form, confirm the event lands, then **unset it** — test
+events are excluded from reporting. Check Events Manager shows the browser and server `Lead`
+as one deduplicated event, not two.
+
+Without the token the server half is skipped silently and the browser pixel still works.
 
 ## Deploy
 
