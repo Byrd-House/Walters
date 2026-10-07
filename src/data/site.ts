@@ -50,6 +50,12 @@ export const site = {
   // tracking that isn't running.
   tracking: {
     plausible: false as boolean, // cookieless, aggregate only, no personal data
+    // Vercel Web Analytics, rendered by <Analytics /> in BaseLayout. Cookieless:
+    // visitors are a hash of the incoming request, discarded after 24 hours.
+    // True because the script ships on every page — it arrived via two Vercel
+    // bot PRs that left the privacy policy untouched, which is the exact drift
+    // these flags exist to prevent.
+    vercelAnalytics: true as boolean,
     // Pixel ID, or null when off. Holds the ID rather than a separate boolean so
     // the privacy disclosure and the script can never disagree about whether the
     // pixel is live. Not a secret — it ships in the page source by design.

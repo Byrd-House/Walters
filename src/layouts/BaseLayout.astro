@@ -4,6 +4,9 @@ import Seo from "../components/Seo.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import MetaPixel from "../components/MetaPixel.astro";
+// Vercel Web Analytics. This is the only place it's set up — read the note in
+// astro.config.mjs before also enabling the adapter's `webAnalytics` option,
+// which is the other half of a duplicate setup that was removed.
 import Analytics from "@vercel/analytics/astro";
 
 interface Props {

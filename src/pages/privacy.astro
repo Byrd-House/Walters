@@ -7,8 +7,8 @@ import { site } from "../data/site";
 // collected fields → src/lib/leads/schema.ts, destinations → src/lib/leads/,
 // IP handling → src/lib/rate-limit.ts, third-party requests → MetaPixel.astro.
 // If any of those change, change this page in the same commit.
-const { plausible, metaPixel } = site.tracking;
-const anyTracking = plausible || metaPixel;
+const { plausible, metaPixel, vercelAnalytics } = site.tracking;
+const anyTracking = plausible || metaPixel || vercelAnalytics;
 ---
 
 <BaseLayout
@@ -55,6 +55,19 @@ const anyTracking = plausible || metaPixel;
           doesn't build a profile of you, doesn't track you across other websites, and the data we
           see is aggregate only. There is nothing for you to opt out of because there is nothing
           identifying you.
+        </p>
+      )
+    }
+    {
+      vercelAnalytics && (
+        <p>
+          <strong>Vercel Web Analytics.</strong> Our host counts page views so we can see which
+          pages people actually read. It <strong>sets no cookies</strong> and doesn't follow you to
+          other sites. Instead of storing who you are, it turns each incoming request into a hash
+          and throws that away after 24 hours. What it records is the page you viewed, the site you
+          came from, your approximate location (country, region, city), and your device type,
+          operating system, and browser. The numbers we see are aggregate counts, not a profile of
+          you, and they aren't tied to your IP address.
         </p>
       )
     }
@@ -113,7 +126,8 @@ const anyTracking = plausible || metaPixel;
     </p>
     <ul>
       <li>
-        <strong>Vercel</strong>: hosts the website and runs the form's submission endpoint.
+        <strong>Vercel</strong>: hosts the website and runs the form's submission endpoint
+        {vercelAnalytics && ", and counts page views as described above"}.
       </li>
       <li>
         <strong>Resend</strong>: delivers your quote request to us by email.
