@@ -53,6 +53,10 @@ export const site = {
     // Pixel ID, or null when off. Holds the ID rather than a separate boolean so
     // the privacy disclosure and the script can never disagree about whether the
     // pixel is live. Not a secret — it ships in the page source by design.
+    // Governs BOTH halves of the Meta integration: the browser pixel
+    // (MetaPixel.astro: PageView, Contact, Lead) and the server-side Conversions
+    // API event for the same pixel (lib/analytics/capi.ts), which needs
+    // META_CAPI_ACCESS_TOKEN as well. Null here turns off both.
     metaPixel: "1833699738043221" as string | null, // sets cookies; shares visit data with Meta
   },
   // Confirmed by the owner 2026-09-29. These replaced two profiles found by

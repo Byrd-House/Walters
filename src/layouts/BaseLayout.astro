@@ -3,7 +3,7 @@ import "../styles/global.css";
 import Seo from "../components/Seo.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { site } from "../data/site";
+import MetaPixel from "../components/MetaPixel.astro";
 
 interface Props {
   title?: string;
@@ -14,18 +14,6 @@ interface Props {
 }
 
 const { title, description, image, noindex, schema } = Astro.props;
-
-// Meta Pixel. Gated on site.tracking.metaPixel holding an ID — the same value the
-// privacy policy renders its cookie/third-party disclosure from, so the page can
-// never claim less tracking than the site performs. Digits-only guard because the
-// ID is interpolated straight into an inline script.
-const pixelId = /^\d+$/.test(site.tracking.metaPixel ?? "") ? site.tracking.metaPixel : null;
-const pixelSnippet = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${pixelId}');fbq('track','PageView');`;
 ---
 
 <!doctype html>
@@ -42,22 +30,7 @@ fbq('init','${pixelId}');fbq('track','PageView');`;
     <link rel="stylesheet" href="https://use.typekit.net/ioy6xpq.css" />
 
     <Seo title={title} description={description} image={image} noindex={noindex} schema={schema} />
-    {
-      pixelId && (
-        <>
-          <script is:inline set:html={pixelSnippet} />
-          <noscript>
-            <img
-              height="1"
-              width="1"
-              style="display:none"
-              alt=""
-              src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-            />
-          </noscript>
-        </>
-      )
-    }
+    <MetaPixel />
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />
