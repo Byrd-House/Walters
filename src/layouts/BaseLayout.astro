@@ -4,6 +4,7 @@ import Seo from "../components/Seo.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import MetaPixel from "../components/MetaPixel.astro";
+import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title?: string;
@@ -31,6 +32,7 @@ const { title, description, image, noindex, schema } = Astro.props;
 
     <Seo title={title} description={description} image={image} noindex={noindex} schema={schema} />
     <MetaPixel />
+    <Analytics />
   </head>
   <body class="flex min-h-screen flex-col">
     <Header />

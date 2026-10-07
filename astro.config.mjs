@@ -7,7 +7,9 @@ import vercel from '@astrojs/vercel';
 // `export const prerender = false`, served as a Vercel function via the adapter.
 export default defineConfig({
   site: 'https://jessewalterslandscaping.com',
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: { enabled: true },
+  }),
   vite: {
     plugins: [tailwindcss()],
   },
