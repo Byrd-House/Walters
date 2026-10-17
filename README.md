@@ -45,6 +45,9 @@ public/
 
 ## Fonts
 
+- **Brygada 1918 Bold** (logo wordmark) — self-hosted from `public/fonts/`, SIL OFL. Subset to Latin
+  plus the `smcp` and `kern` features (9 KB). Do not swap in Google's hosted web font: its subset drops
+  the small-cap glyphs, so the browser fakes them by scaling capitals and the lockup goes light.
 - **Birdie** (display/H1) — self-hosted from `public/fonts/`.
 - **Freight** (`freight-text-pro`) + **Avenir** (`avenir-lt-pro`) — Adobe Fonts kit `ioy6xpq`, loaded
   via the `<link>` in `BaseLayout.astro`. The kit ships weights **400/700 only**, so headings render 700.
@@ -173,7 +176,8 @@ the sitemap, and OG tags.
 2. **3–5 real testimonial quotes** (the 5.0 / 25 rating is confirmed).
 3. **Social profile URLs** (handle "JW Landscape and Maintenance").
 4. **Jobber API credentials** for the live integration.
-5. Vector logo (only a raster tree mark exists today) + production domain.
+5. Vector logo (the live-oak mark is still raster — `src/assets/logo/logo.png`, 1200x798) +
+   production domain.
 
 ## Notes
 

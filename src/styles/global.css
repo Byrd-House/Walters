@@ -20,11 +20,24 @@
   font-display: swap;
 }
 
+/* Logo wordmark face (Brygada 1918 Bold, SIL OFL). Self-hosted and subset to
+   Latin + smcp/kern — 9 KB, versus 242 KB for the full variable font. Google's
+   own web subset is not a substitute: it strips the small-cap glyphs, leaving
+   the browser to fake them by scaling capitals. */
+@font-face {
+  font-family: "Brygada 1918";
+  src: url("/fonts/brygada-1918-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* — Typography ——————————————————————————————————————————————————————— */
   --font-display: "Birdie", Georgia, serif;                            /* H1 / hero */
   --font-heading: "freight-text-pro", "Lora", Georgia, serif;          /* H2–H3 */
   --font-sans: "avenir-lt-pro", "Nunito Sans", system-ui, sans-serif;  /* body / UI (default) */
+  --font-wordmark: "Brygada 1918", Georgia, serif;                    /* logo lockup only */
 
   /* Type scale (brief §4). NOTE: the Adobe kit ships weights 400 & 700 only,
      so headings render at 700 rather than the spec's 600/Semibold. */
@@ -94,4 +107,36 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ===========================================================================
+   Logo lockup — the name over the tagline, beside the tree mark.
+   Kept here rather than as utilities on the markup so the header, the footer
+   and the social-image route cannot drift apart.
+
+   Two things are load-bearing and easy to undo by accident:
+   · No `text-transform: uppercase`. The small caps come from the font's smcp
+     feature, which acts on lowercase letters — transforming them to capitals
+     first leaves the feature nothing to act on and flattens J and W into the
+     same height as the rest.
+   · The negative right margins. letter-spacing adds a gap after the *last*
+     glyph too, so without them each line measures wider than it looks and the
+     centred tagline sits half a gap left of the name above it.
+   =========================================================================== */
+.wordmark {
+  font-family: var(--font-wordmark);
+  font-weight: 700;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.05em;
+  margin-right: -0.05em;
+  line-height: 1;
+}
+
+.wordmark-tagline {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.45em;
+  margin-right: -0.45em;
+  line-height: 1;
 }
