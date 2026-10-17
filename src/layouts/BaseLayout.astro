@@ -27,8 +27,11 @@ const { title, description, image, noindex, schema } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Preload the self-hosted display face (above-the-fold H1) -->
+    <!-- Preload the self-hosted faces that paint above the fold: the logo
+         wordmark (header, every page) and the display face (hero H1). -->
+    <link rel="preload" href="/fonts/brygada-1918-700.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/TAYBirdieRegular.woff" as="font" type="font/woff" crossorigin />
     <!-- Adobe Fonts kit: Freight ("freight-text-pro") + Avenir ("avenir-lt-pro") -->
     <link rel="stylesheet" href="https://use.typekit.net/ioy6xpq.css" />
